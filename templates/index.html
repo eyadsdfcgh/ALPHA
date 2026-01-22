@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Secure Access</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/protection.js"></script>
+</head>
+
+<body>
+
+    <div class="container fade-in">
+        <div id="messageBox" class="message"></div>
+
+        <!-- Login Form -->
+        <div id="loginSection">
+            <h1>Welcome Back</h1>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" id="loginUser" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="loginPass" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+            <button class="toggle-btn" onclick="showRegister()">Don't have an account? Create one</button>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerSection" style="display: none;">
+            <h1>Create Account</h1>
+            <form id="registerForm">
+                <div class="input-group">
+                    <input type="text" id="regUser" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="regPass" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign Up</button>
+            </form>
+            <button class="toggle-btn" onclick="showLogin()">Already have an account? Sign In</button>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

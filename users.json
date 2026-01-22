@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "username": "Eyad",
+        "password": "eyad123321@@##$$",
+        "role": "admin",
+        "has_paid": true
+    },
+    {
+        "id": 2,
+        "username": "salah",
+        "password": "salah00913495@#9846",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 3,
+        "username": "mohanad200",
+        "password": "Mohanad2009@",
+        "role": "admin",
+        "has_paid": true
+    },
+    {
+        "id": 4,
+        "username": "admin",
+        "password": "admin_password_123",
+        "role": "admin",
+        "has_paid": true
+    },
+    {
+        "id": 5,
+        "username": "mohamed",
+        "password": "mohamed88360",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 6,
+        "username": "mas",
+        "password": "mas",
+        "role": "user",
+        "has_paid": false
+    }
+]

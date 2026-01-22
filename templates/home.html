@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | ALPHA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            margin-bottom: 1rem;
+        }
+    </style>
+    <script src="/static/protection.js"></script>
+    <script src="/static/chat.js"></script>
+</head>
+
+<body>
+
+    <div class="container fade-in" style="width: 600px; text-align: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1 style="margin:0;">Dashboard</h1>
+            <span class="status-badge">{{ user.username }}</span>
+        </div>
+
+        <div class="card">
+            <h3>Advanced Security Course</h3>
+            <p style="color: rgba(255,255,255,0.6); margin-bottom: 1.5rem;">
+                {% if user.has_paid %}
+                You have full access to the course materials.
+                {% else %}
+                Pay to unlock SMC course
+                {% endif %}
+            </p>
+
+            {% if user.has_paid %}
+            <a href="/course" class="btn-primary"
+                style="text-decoration: none; display: inline-block; background: linear-gradient(135deg, #10b981, #059669);">
+                Access Content &rarr;
+            </a>
+            {% else %}
+            <a href="/buy-crypto" class="btn-primary"
+                style="text-decoration: none; display: inline-block; background: linear-gradient(135deg, #f59e0b, #d97706); position: relative; width: 100%; text-align: center;">
+                💰 Pay with Crypto - $50
+                <span
+                    style="position: absolute; top: -8px; right: -8px; background: #10b981; color: white; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 10px;">
+                    No KYC
+                </span>
+            </a>
+
+            <p style="margin-top: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.5); text-align: center;">
+                ✅ Bitcoin • Ethereum • USDT • Litecoin accepted
+            </p>
+            {% endif %}
+        </div>
+
+        <a href="/logout" class="btn-primary"
+            style="background: rgba(255,255,255,0.1); width: auto; padding: 0.8rem 2rem; text-decoration: none; font-size: 0.9rem;">
+            Logout
+        </a>
+    </div>
+
+</body>
+
+</html>
