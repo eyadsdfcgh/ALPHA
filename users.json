@@ -1,0 +1,86 @@
+[
+    {
+        "id": 1,
+        "username": "Eyad",
+        "password": "eyad123321@@##$$",
+        "role": "admin",
+        "has_paid": true
+    },
+    {
+        "id": 2,
+        "username": "salah",
+        "password": "salah00913495@#9846",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 3,
+        "username": "mohanad200",
+        "password": "Mohanad2009@",
+        "role": "admin",
+        "has_paid": true
+    },
+    {
+        "id": 4,
+        "username": "admin",
+        "password": "admin_password_123",
+        "role": "admin",
+        "has_paid": true
+    },
+    {
+        "id": 5,
+        "username": "mohamed",
+        "password": "mohamed88360",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 6,
+        "username": "mas",
+        "password": "mas",
+        "role": "user",
+        "has_paid": false
+    },
+    {
+        "id": 7,
+        "username": "MOHAMED ALSAID",
+        "password": "mohamed123",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 8,
+        "username": "Ahmed1980",
+        "password": "AHMED200",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 9,
+        "username": "Ahmed2000",
+        "password": "Ahmed2000",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 10,
+        "username": "Mohamed2000",
+        "password": "Mohamed2000",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 11,
+        "username": "Mariam234",
+        "password": "Mariam234",
+        "role": "user",
+        "has_paid": true
+    },
+    {
+        "id": 12,
+        "username": "Eman234",
+        "password": "Eman234",
+        "role": "user",
+        "has_paid": true
+    }
+]

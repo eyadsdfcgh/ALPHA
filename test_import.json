@@ -1,0 +1,20 @@
+[
+    {
+        "username": "test_user1",
+        "password": "password123",
+        "role": "user",
+        "has_paid": false
+    },
+    {
+        "username": "test_admin",
+        "password": "adminpass456",
+        "role": "admin",
+        "has_paid": true
+    },
+    {
+        "username": "premium_user",
+        "password": "premium789",
+        "role": "user",
+        "has_paid": true
+    }
+]

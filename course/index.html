@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مكتبة الفيديوهات التعليمية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --dark-bg: #0f0f23;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text-primary: #ffffff;
+            --text-secondary: #b4b4c5;
+            --accent-color: #667eea;
+            --accent-glow: rgba(102, 126, 234, 0.4);
+            --success-color: #10b981;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Anti-Piracy Protection */
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        video {
+            pointer-events: auto;
+        }
+
+        video::cue {
+            pointer-events: none;
+        }
+
+        .video-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.15);
+            pointer-events: none;
+            z-index: 10;
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(240, 147, 251, 0.1) 0%, transparent 50%);
+            z-index: 0;
+            animation: backgroundPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes backgroundPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 2rem 0;
+        }
+
+        .header-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: fadeInDown 1s ease-out;
+            text-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .video-count {
+            display: inline-block;
+            background: var(--card-bg);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-out 0.6s both;
+        }
+
+        .video-count span {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Video Grid */
+        .videos-grid {
+            display: grid;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.8s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .video-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .video-card:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .video-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .video-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-color);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 0 40px var(--accent-glow);
+        }
+
+        .video-card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .video-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .video-number {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            box-shadow: 0 10px 30px var(--accent-glow);
+            flex-shrink: 0;
+        }
+
+        .video-info {
+            flex: 1;
+        }
+
+        .video-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .video-meta {
+            display: flex;
+            gap: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-icon {
+            font-size: 1.2rem;
+        }
+
+        .video-player-wrapper {
+            margin-top: 1.5rem;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+            outline: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        video::-webkit-media-controls-download-button {
+            display: none !important;
+        }
+
+        video::-webkit-media-controls-enclosure {
+            overflow: hidden;
+        }
+
+        video::-webkit-media-controls-panel {
+            width: calc(100% + 30px);
+        }
+
+        .video-controls {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 5px 20px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .progress-bar {
+            margin-top: 1rem;
+            height: 6px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 2rem;
+            }
+
+            .header-subtitle {
+                font-size: 1rem;
+            }
+
+            .video-card {
+                padding: 1.5rem;
+            }
+
+            .video-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .video-number {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .video-title {
+                font-size: 1.5rem;
+            }
+
+            .video-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .video-controls {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 5rem;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-heart {
+            color: #f5576c;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            10%,
+            30% {
+                transform: scale(1.1);
+            }
+
+            20%,
+            40% {
+                transform: scale(1);
+            }
+        }
+    </style>
+    <script src="/static/protection.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="header-title">📚 مكتبة الفيديوهات التعليمية</h1>
+            <p class="header-subtitle">شاهد الدروس بترتيب احترافي ومنظم</p>
+            <div class="video-count">
+                الطالب: <span style="color: var(--accent-color); font-weight: 700;">{% if user %}{{ user.username }}{%
+                    else %}ضيف{% endif %}</span>
+                <br>
+                <span id="videoCount">54</span> فيديو تعليمي متاح
+            </div>
+        </header>
+
+        <div class="videos-grid" id="videosGrid">
+            <!-- Videos will be generated dynamically by JavaScript -->
+        </div>
+
+        <footer>
+            <p>صُنع بـ <span class="footer-heart">♥</span> من أجل التعليم الأفضل</p>
+        </footer>
+    </div>
+
+    <script>
+        // ========== ANTI-PIRACY PROTECTION ==========
+
+        const USERNAME = "{% if user %}{{ user.username }}{% else %}GUEST{% endif %}";
+        const USER_ID = "{% if user %}{{ user.id }}{% else %}0{% endif %}";
+        const VIDEO_TOKEN = "{% if video_token %}{{ video_token }}{% else %}{% endif %}";
+
+        // Disable right-click
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            // F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+P
+            if (e.keyCode == 123 ||
+                (e.ctrlKey && e.shiftKey && [73, 74, 67].includes(e.keyCode)) ||
+                (e.ctrlKey && [85, 83, 80].includes(e.keyCode))) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Disable text selection, drag, copy, cut
+        document.onselectstart = () => false;
+        document.ondragstart = () => false;
+        document.addEventListener('copy', e => e.preventDefault());
+        document.addEventListener('cut', e => e.preventDefault());
+
+        // Blur detection (tab switching) - pause videos
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                document.querySelectorAll('video').forEach(v => v.pause());
+            }
+        });
+
+        // Multiple tab detection
+        // Multiple tab detection removed
+
+
+        // ========== VIDEO LIBRARY CODE ==========
+
+        // Arabic number words for better titles
+        const arabicNumbers = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس', 'السابع', 'الثامن', 'التاسع', 'العاشر'];
+
+        // Function to get Arabic ordinal number
+        function getArabicOrdinal(num) {
+            if (num <= 10) {
+                return arabicNumbers[num - 1];
+            }
+            return 'رقم ' + num;
+        }
+
+        // Function to format file size
+        function formatFileSize(num) {
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const baseSize = Math.floor(Math.random() * 15) + 5; // Random size between 5-20 MB
+            return baseSize + ' MB';
+        }
+
+        // Array of embed URLs (videos 3-54)
+        const embedUrls = [
+            "https://vidtube.one/embed-1wj8ywh7u3d0.html",  // Video 3
+            "https://vidtube.one/embed-ptl63k77j7zj.html",  // Video 4
+            "https://vidtube.one/embed-63jzfba7ckue.html",  // Video 5
+            "https://vidtube.one/embed-vshrza1dl67o.html",  // Video 6
+            "https://vidtube.one/embed-stwwt7ge2nod.html",  // Video 7
+            "https://vidtube.one/embed-awh0zc6zyqhi.html",  // Video 8
+            "https://vidtube.one/embed-upiifh1kr9wo.html",  // Video 9
+            "https://vidtube.one/embed-ljd54ir4wfdd.html",  // Video 10
+            "https://vidtube.one/embed-2x5ilrr09aa7.html",  // Video 11
+            "https://vidtube.one/embed-cp7sst2iqcy8.html",  // Video 12
+            "https://vidtube.one/embed-swh40xgza38r.html",  // Video 13
+            "https://vidtube.one/embed-34snp85e3j7r.html",  // Video 14
+            "https://vidtube.one/embed-bbmhoaofw001.html",  // Video 15
+            "https://vidtube.one/embed-jyiqslsej5uq.html",  // Video 16
+            "https://vidtube.one/embed-uf446bielj3s.html",  // Video 17
+            "https://vidtube.one/embed-9ttixi6l7wdq.html",  // Video 18
+            "https://vidtube.one/embed-v204iqvp0dcq.html",  // Video 19
+            "https://vidtube.one/embed-y3hstri70acz.html",  // Video 20
+            "https://vidtube.one/embed-3albfe1o86xl.html",  // Video 21
+            "https://vidtube.one/embed-6o0knt11jfoy.html",  // Video 22
+            "https://vidtube.one/embed-682x87qynjvf.html",  // Video 23
+            "https://vidtube.one/embed-426hzifpvbmt.html",  // Video 24
+            "https://vidtube.one/embed-9ajjfqgv5onk.html",  // Video 25
+            "https://vidtube.one/embed-cxv15n7f8d5d.html",  // Video 26
+            "https://vidtube.one/embed-8z713x4f6d26.html",  // Video 27
+            "https://vidtube.one/embed-vl2x31qun32o.html",  // Video 28
+            "https://vidtube.one/embed-1df5o9tbsbzu.html",  // Video 29
+            "https://vidtube.one/embed-c82mfklb2kjh.html",  // Video 30
+            "https://vidtube.one/embed-6wztwj3bh1bs.html",  // Video 31
+            "https://vidtube.one/embed-6zq4j7pvc7qf.html",  // Video 32
+            "https://vidtube.one/embed-45tds75dcu3s.html",  // Video 33
+            "https://vidtube.one/embed-52b86bkaxw7q.html",  // Video 34
+            "https://vidtube.one/embed-mor5r3g8srp2.html",  // Video 35
+            "https://vidtube.one/embed-0mtdtt3pbvre.html",  // Video 36
+            "https://vidtube.one/embed-1q1v9fbepln3.html",  // Video 37
+            "https://vidtube.one/embed-ilf3yrupwglx.html",  // Video 38
+            "https://vidtube.one/embed-vx5e54jgk3gh.html",  // Video 39
+            "https://vidtube.one/embed-d8gn8ekeg35j.html",  // Video 40
+            "https://vidtube.one/embed-jcnf7o1l0c7h.html",  // Video 41
+            "https://vidtube.one/embed-l8l8xx34xm0n.html",  // Video 42
+            "https://vidtube.one/embed-l6xxchibwmzt.html",  // Video 43
+            "https://vidtube.one/embed-t48tix63c239.html",  // Video 44
+            "https://vidtube.one/embed-kg780iumtcbd.html",  // Video 45
+            "https://vidtube.one/embed-td5oeu8adi4n.html",  // Video 46
+            "https://vidtube.one/embed-qb1824gsicgt.html",  // Video 47
+            "https://vidtube.one/embed-81ocvqrj7t3i.html",  // Video 48
+            "https://vidtube.one/embed-xuhvyh9kp0em.html",  // Video 49
+            "https://vidtube.one/embed-uxe50qsrf3rn.html",  // Video 50
+            "https://vidtube.one/embed-35tkay5t5xxy.html",  // Video 51
+            "https://vidtube.one/embed-7ilmnfmiw9p5.html",  // Video 52
+            "https://vidtube.one/embed-bplkw3dbbrxe.html",  // Video 53
+            "https://vidtube.one/embed-lvtbelgxlydr.html"   // Video 54
+        ];
+
+        // Generate video cards for videos 3-54 (52 videos total)
+        function generateVideoCards() {
+            const videosGrid = document.getElementById('videosGrid');
+            const totalVideos = embedUrls.length;
+
+            for (let i = 0; i < totalVideos; i++) {
+                const videoNumber = i + 3; // Start from video 3
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.style.animationDelay = `${Math.min(i * 0.05, 2)}s`;
+
+                videoCard.innerHTML = `
+                    <div class="video-card-content">
+                        <div class="video-header">
+                            <div class="video-number">${videoNumber}</div>
+                            <div class="video-info">
+                                <h2 class="video-title">الدرس ${getArabicOrdinal(videoNumber)}</h2>
+                                <div class="video-meta">
+                                    <div class="meta-item">
+                                        <span class="meta-icon">📹</span>
+                                        <span>Embedded Video</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-icon">💾</span>
+                                        <span>${formatFileSize(videoNumber)}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="status-badge">متاح الآن</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="video-player-wrapper">
+                            <div class="video-watermark">🔒 ${USERNAME} - ID: ${USER_ID}</div>
+                            <iframe 
+                                id="video${videoNumber}" 
+                                src="${embedUrls[i]}" 
+                                frameborder="0" 
+                                marginwidth="0" 
+                                marginheight="0" 
+                                scrolling="no" 
+                                width="100%" 
+                                height="360" 
+                                allowfullscreen
+                                style="border-radius: 8px; display: block; width: 100%;">
+                            </iframe>
+                        </div>
+
+                        <div class="video-controls">
+                            <button class="btn btn-primary" onclick="alert('الفيديو جاهز للمشاهدة')">
+                                ▶️ مشاهدة
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                videosGrid.appendChild(videoCard);
+            }
+
+            // Update video count display
+            const videoCountElement = document.querySelector('.video-count');
+            if (videoCountElement) {
+                videoCountElement.textContent = `${totalVideos} فيديو تعليمي متاح`;
+            }
+        }
+
+        // Initialize video progress tracking
+        function initializeVideoPlayers() {
+            document.querySelectorAll('video').forEach((video, index) => {
+                const videoId = video.id;
+                const videoNum = videoId.replace('video', '');
+                const progressId = 'progress' + videoNum;
+
+                // Add additional protection attributes
+                video.setAttribute('controlsList', 'nodownload');
+                video.setAttribute('disablePictureInPicture', 'true');
+                video.setAttribute('oncontextmenu', 'return false;');
+
+                // Disable right-click on video
+                video.addEventListener('contextmenu', function (e) {
+                    e.preventDefault();
+                    return false;
+                });
+
+                // Monitor for video download attempts
+                video.addEventListener('loadstart', function () {
+                    console.clear();
+                });
+
+                video.addEventListener('timeupdate', function () {
+                    const progress = (video.currentTime / video.duration) * 100;
+                    const progressBar = document.getElementById(progressId);
+                    if (progressBar) {
+                        progressBar.style.width = progress + '%';
+                    }
+                });
+
+                // Save progress to localStorage
+                video.addEventListener('pause', function () {
+                    localStorage.setItem(videoId + '_time', video.currentTime);
+                });
+
+                // Restore progress from localStorage
+                const savedTime = localStorage.getItem(videoId + '_time');
+                if (savedTime) {
+                    video.currentTime = parseFloat(savedTime);
+                }
+
+                // Handle video error (file not found)
+                video.addEventListener('error', function () {
+                    const wrapper = video.closest('.video-player-wrapper');
+                    if (wrapper && !wrapper.querySelector('.error-message')) {
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message';
+                        errorMsg.style.cssText = `
+                            padding: 2rem;
+                            text-align: center;
+                            color: var(--text-secondary);
+                            background: rgba(255, 255, 255, 0.03);
+                            border-radius: 10px;
+                        `;
+                        errorMsg.innerHTML = `
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+                            <div>الفيديو غير متوفر حاليًا</div>
+                            <div style="font-size: 0.85rem; margin-top: 0.5rem; opacity: 0.7;">
+                                الملف: ${videoNum}.mkv
+                            </div>
+                        `;
+                        video.style.display = 'none';
+                        const watermark = wrapper.querySelector('.video-watermark');
+                        if (watermark) watermark.style.display = 'none';
+                        wrapper.appendChild(errorMsg);
+                    }
+                });
+            });
+        }
+
+        // Toggle play/pause
+        function togglePlay(videoId) {
+            const video = document.getElementById(videoId);
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+
+        // Toggle fullscreen
+        function toggleFullscreen(videoId) {
+            const video = document.getElementById(videoId);
+            if (video.requestFullscreen) {
+                video.requestFullscreen();
+            } else if (video.webkitRequestFullscreen) {
+                video.webkitRequestFullscreen();
+            } else if (video.msRequestFullscreen) {
+                video.msRequestFullscreen();
+            }
+        }
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Generate videos when page loads
+        window.addEventListener('DOMContentLoaded', function () {
+            generateVideoCards();
+
+            // Additional protection: Clear console periodically
+            setInterval(function () {
+                console.clear();
+            }, 5000);
+        });
+
+        // Detect and prevent video download via network inspection
+        window.addEventListener('beforeunload', function () {
+            console.clear();
+        });
+
+        // Protection message
+        console.log('%c⚠️ تحذير أمني', 'color: red; font-size: 30px; font-weight: bold;');
+        console.log('%cهذا المحتوى محمي بحقوق الملكية الفكرية', 'color: orange; font-size: 16px;');
+        console.log('%cأي محاولة لنسخ أو تسجيل المحتوى تعد انتهاكًا للقانون', 'color: yellow; font-size: 14px;');
+    </script>
+</body>
+
+</html>

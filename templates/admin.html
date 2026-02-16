@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/protection.js"></script>
+    <script src="/static/chat.js"></script>
+</head>
+
+<body>
+
+    <div class="container admin-container fade-in">
+        <h1>User Management</h1>
+        <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-secondary" onclick="exportUsers()" title="Export all users to JSON file">
+                    📥 Export Users
+                </button>
+                <button class="btn-secondary" onclick="document.getElementById('importFile').click()" title="Import users from JSON file">
+                    📤 Import Users
+                </button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importUsers(event)">
+            </div>
+            <button class="btn-primary" onclick="openCreateModal()">+ Create New User</button>
+        </div>
+        <div id="adminMessage" class="message"></div>
+
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- Rows injected by JS -->
+            </tbody>
+        </table>
+
+        <div style="margin-top: 2rem; text-align: center;">
+            <a href="/" style="color: rgba(255,255,255,0.5); text-decoration: none;">&larr; Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Create Modal -->
+    <div id="createModal" class="modal">
+        <div class="modal-content">
+            <h2>Create New User</h2>
+            <form id="createForm">
+                <input type="text" id="createUsername" placeholder="Username" required>
+                <input type="password" id="createPassword" placeholder="Password" required>
+                <div style="margin: 1rem 0; text-align: left;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="createHasPaid" style="width: auto;">
+                        <span>Has Paid (Full Access)</span>
+                    </label>
+                </div>
+                <select id="createRole"
+                    style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; border-radius: 8px; margin-bottom: 1rem;">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <button type="submit" class="btn-primary">Create Account</button>
+                <button type="button" class="toggle-btn" onclick="closeCreateModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h2>Edit User</h2>
+            <form id="editForm">
+                <input type="hidden" id="editId">
+                <input type="text" id="editUser" placeholder="Username" required>
+                <input type="password" id="editPass" placeholder="New Password (optional)">
+                <input type="text" id="editRole" placeholder="Role (user/admin)" required>
+                <div style="margin: 1rem 0; text-align: left;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="checkbox" id="editHasPaid" style="width: auto;">
+                        <span>Has Paid (Full Access)</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary">Save Changes</button>
+                <button type="button" class="toggle-btn" onclick="closeModal()">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        // Auto-load users on admin page
+        document.addEventListener('DOMContentLoaded', loadUsers);
+    </script>
+</body>
+
+</html>

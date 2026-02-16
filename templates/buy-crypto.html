@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pay with Crypto | ALPHA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .crypto-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+        }
+
+        .price-display {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .crypto-selector {
+            margin-bottom: 2rem;
+        }
+
+        .crypto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .crypto-option {
+            cursor: pointer;
+            padding: 1.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .crypto-option:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .crypto-option.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .crypto-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .crypto-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .payment-info {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 2rem;
+        }
+
+        .payment-info.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .qr-code {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 1rem 0;
+        }
+
+        .address-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(99, 102, 241, 0.8);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(99, 102, 241, 1);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+
+        .status-waiting {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
+        .status-confirmed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+    <script src="/static/protection.js"></script>
+    <script src="/static/chat.js"></script>
+</head>
+
+<body>
+    <div class="container fade-in">
+        <div class="crypto-container">
+            <a href="/home" class="back-link">← Back to Dashboard</a>
+
+            <h1 style="text-align: center; margin-bottom: 1rem;">Pay with Cryptocurrency</h1>
+            <p style="text-align: center; color: rgba(255,255,255,0.6); margin-bottom: 2rem;">
+                No KYC • Fast • Secure • Anonymous
+            </p>
+
+            <div class="price-display">
+                <div class="price-amount">$50</div>
+                <div style="color: rgba(255,255,255,0.7);">One-time payment • Lifetime Access</div>
+            </div>
+
+            <div class="crypto-selector">
+                <h3 style="margin-bottom: 1rem;">Select Cryptocurrency</h3>
+                <div class="crypto-grid">
+                    <div class="crypto-option selected" data-crypto="btc">
+                        <div class="crypto-icon">₿</div>
+                        <div class="crypto-name">Bitcoin</div>
+                    </div>
+                    <div class="crypto-option" data-crypto="eth">
+                        <div class="crypto-icon">Ξ</div>
+                        <div class="crypto-name">Ethereum</div>
+                    </div>
+                    <div class="crypto-option" data-crypto="usdttrc20">
+                        <div class="crypto-icon">₮</div>
+                        <div class="crypto-name">USDT (TRC20)</div>
+                    </div>
+                    <div class="crypto-option" data-crypto="ltc">
+                        <div class="crypto-icon">Ł</div>
+                        <div class="crypto-name">Litecoin</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="createPaymentBtn" style="width: 100%; padding: 1.2rem;">
+                Create Payment
+            </button>
+
+            <div class="payment-info" id="paymentInfo">
+                <h3 style="text-align: center; margin-bottom: 1rem;">Payment Details</h3>
+
+                <div style="text-align: center;">
+                    <div id="qrCode" class="qr-code"></div>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <strong>Amount to Send:</strong>
+                    <div style="font-size: 1.5rem; color: #6366f1; margin: 0.5rem 0;" id="payAmount">-</div>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <strong>Payment Address:</strong>
+                    <div class="address-box" id="addressBox">
+                        <span id="payAddress">-</span>
+                        <button class="copy-btn" onclick="copyAddress()">Copy</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <div class="status-indicator status-waiting" id="statusBadge">
+                        ⏳ Waiting for payment...
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>⚡ Important:</strong>
+                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>Send the exact amount shown above</li>
+                        <li>Payment will be confirmed automatically</li>
+                        <li>You'll be redirected when payment is confirmed</li>
+                        <li>Do not close this page</li>
+                    </ul>
+                </div>
+
+                <div id="loadingSpinner" class="loading-spinner" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script>
+        let selectedCrypto = 'btc';
+        let paymentId = null;
+        let checkInterval = null;
+
+        // Crypto selection
+        document.querySelectorAll('.crypto-option').forEach(option => {
+            option.addEventListener('click', function () {
+                document.querySelectorAll('.crypto-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedCrypto = this.dataset.crypto;
+            });
+        });
+
+        // Create payment
+        document.getElementById('createPaymentBtn').addEventListener('click', async function () {
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Creating payment...';
+
+            try {
+                const response = await fetch('/create-crypto-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ crypto: selectedCrypto })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    paymentId = data.payment_id;
+
+                    // Update UI with payment details
+                    document.getElementById('payAmount').textContent = `${data.pay_amount} ${data.pay_currency}`;
+                    document.getElementById('payAddress').textContent = data.pay_address;
+
+                    // Generate QR code
+                    document.getElementById('qrCode').innerHTML = '';
+                    new QRCode(document.getElementById('qrCode'), {
+                        text: data.pay_address,
+                        width: 200,
+                        height: 200
+                    });
+
+                    // Show payment info
+                    document.getElementById('paymentInfo').classList.add('show');
+
+                    // Start checking payment status
+                    startPaymentChecking();
+                } else {
+                    alert('Error: ' + data.message);
+                    btn.disabled = false;
+                    btn.textContent = 'Create Payment';
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Create Payment';
+            }
+        });
+
+        // Check payment status
+        async function checkPaymentStatus() {
+            if (!paymentId) return;
+
+            try {
+                const response = await fetch(`/check-payment/${paymentId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const status = data.payment_status;
+                    const statusBadge = document.getElementById('statusBadge');
+
+                    console.log('Payment status:', status);
+
+                    if (status === 'waiting') {
+                        statusBadge.className = 'status-indicator status-waiting';
+                        statusBadge.textContent = '⏳ Waiting for payment...';
+                    } else if (status === 'confirming') {
+                        statusBadge.className = 'status-indicator status-waiting';
+                        statusBadge.textContent = '🔄 Confirming payment...';
+                    } else if (status === 'confirmed' || status === 'finished') {
+                        statusBadge.className = 'status-indicator status-confirmed';
+                        statusBadge.textContent = '✅ Payment Confirmed!';
+                        clearInterval(checkInterval);
+
+                        // Redirect to course after 2 seconds
+                        setTimeout(() => {
+                            window.location.href = '/course';
+                        }, 2000);
+                    } else if (status === 'failed' || status === 'expired') {
+                        statusBadge.className = 'status-indicator status-error';
+                        statusBadge.textContent = '❌ Payment ' + status;
+                        clearInterval(checkInterval);
+                    }
+
+                    // Check if has_access granted (webhook processed)
+                    if (data.has_access) {
+                        statusBadge.className = 'status-indicator status-confirmed';
+                        statusBadge.textContent = '✅ Access Granted!';
+                        clearInterval(checkInterval);
+                        setTimeout(() => {
+                            window.location.href = '/course';
+                        }, 1500);
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking payment:', error);
+            }
+        }
+
+        function startPaymentChecking() {
+            // Check immediately
+            checkPaymentStatus();
+
+            // Then check every 10 seconds
+            checkInterval = setInterval(checkPaymentStatus, 10000);
+        }
+
+        // Copy address to clipboard
+        function copyAddress() {
+            const address = document.getElementById('payAddress').textContent;
+            navigator.clipboard.writeText(address).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Cleanup on page leave
+        window.addEventListener('beforeunload', function () {
+            if (checkInterval) {
+                clearInterval(checkInterval);
+            }
+        });
+    </script>
+</body>
+
+</html>
