@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA | Admin - Manage Payments</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/protection.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --panel: rgba(255, 255, 255, 0.03);
+            --border: rgba(160, 32, 240, 0.2);
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --primary: #A020F0;
+            --text: #f0f0ff;
+            --text-muted: rgba(240, 240, 255, 0.5);
+            --green: #10b981;
+            --red: #ef4444;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--panel);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        th {
+            background: rgba(160, 32, 240, 0.1);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .receipt-thumb {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 1px solid var(--border-subtle);
+            transition: transform 0.2s;
+        }
+
+        .receipt-thumb:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #fff;
+        }
+
+        .btn-approve {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-approve:hover {
+            background: rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-reject:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        /* Modal for Image Preview */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal img {
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 8px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: white;
+            font-size: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="title">Manage Manual Payments (Vodafone Cash)</div>
+        <a href="/admin" class="back-link">&larr; Back to Admin Dashboard</a>
+    </div>
+
+    {% if payments|length > 0 %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>User</th>
+                <th>Tier Requested</th>
+                <th>Amount Due</th>
+                <th>Receipt</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for payment in payments %}
+            <tr id="payment-{{ payment.id }}">
+                <td>{{ payment.date }}</td>
+                <td>
+                    <strong>{{ payment.username }}</strong><br>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">ID: {{ payment.user_id }}</span>
+                </td>
+                <td>
+                    <span
+                        style="background: rgba(160, 32, 240, 0.2); padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; color: #d8b4fe;">{{
+                        payment.tier }}</span>
+                </td>
+                <td style="font-weight: bold; color: var(--green);">${{ payment.amount }}</td>
+                <td>
+                    <img src="/static/uploads/{{ payment.receipt }}" alt="Receipt" class="receipt-thumb"
+                        onclick="openPreview('/static/uploads/{{ payment.receipt }}')">
+                </td>
+                <td>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-approve" onclick="managePayment({{ payment.id }}, 'approve')">Approve
+                            ✓</button>
+                        <button class="btn btn-reject" onclick="managePayment({{ payment.id }}, 'reject')">Reject
+                            ✕</button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <h2 style="margin-bottom: 1rem;">No Pending Payments</h2>
+        <p>All Vodafone Cash requests have been processed.</p>
+    </div>
+    {% endif %}
+
+    <!-- Preview Modal -->
+    <div class="modal" id="previewModal">
+        <button class="close-modal" onclick="closePreview()">&times;</button>
+        <img src="" id="previewImage" alt="Receipt Preview">
+    </div>
+
+    <script>
+        function openPreview(src) {
+            document.getElementById('previewImage').src = src;
+            document.getElementById('previewModal').classList.add('active');
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+
+        async function managePayment(paymentId, action) {
+            if (!confirm(`Are you sure you want to ${action} this payment?`)) return;
+
+            try {
+                const res = await fetch(`/api/admin/payments/${action}/${paymentId}`, {
+                    method: 'POST'
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Remove row from table
+                    const row = document.getElementById(`payment-${paymentId}`);
+                    row.remove();
+
+                    // Check if table empty
+                    const tbody = document.querySelector('tbody');
+                    if (tbody && tbody.children.length === 0) {
+                        location.reload(); // Reload to show empty state
+                    }
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (err) {
+                alert('Network error. Please try again.');
+            }
+        }
+    </script>
+</body>
+
+</html>

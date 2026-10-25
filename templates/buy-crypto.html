@@ -205,6 +205,37 @@
         .back-link:hover {
             color: rgba(255, 255, 255, 0.9);
         }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 100% !important;
+                max-width: 95% !important;
+                padding: 1.25rem !important;
+                margin: 1rem auto !important;
+            }
+
+            .crypto-container {
+                padding: 0;
+                margin: 0.5rem auto;
+            }
+
+            .price-display {
+                padding: 1.25rem;
+            }
+
+            .price-amount {
+                font-size: 2.3rem;
+            }
+
+            .crypto-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .payment-info {
+                padding: 1.25rem;
+            }
+        }
     </style>
     <script src="/static/protection.js"></script>
     <script src="/static/chat.js"></script>
@@ -221,8 +252,8 @@
             </p>
 
             <div class="price-display">
-                <div class="price-amount">$50</div>
-                <div style="color: rgba(255,255,255,0.7);">One-time payment • Lifetime Access</div>
+                <div class="price-amount" id="displayPrice">$60</div>
+                <div style="color: rgba(255,255,255,0.7);">Selected Tier: <strong id="displayTier">Pro</strong></div>
             </div>
 
             <div class="crypto-selector">
@@ -298,6 +329,15 @@
         let paymentId = null;
         let checkInterval = null;
 
+        // Get tier from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlTier = urlParams.get('tier') || 'Pro';
+        const tierPrices = { 'Starter': 30, 'Pro': 60, 'VIP': 150 };
+
+        // Update UI
+        document.getElementById('displayTier').textContent = urlTier;
+        document.getElementById('displayPrice').textContent = '$' + (tierPrices[urlTier] || 60);
+
         // Crypto selection
         document.querySelectorAll('.crypto-option').forEach(option => {
             option.addEventListener('click', function () {
@@ -319,7 +359,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ crypto: selectedCrypto })
+                    body: JSON.stringify({ crypto: selectedCrypto, tier: urlTier })
                 });
 
                 const data = await response.json();

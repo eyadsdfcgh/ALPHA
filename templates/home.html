@@ -4,84 +4,1621 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | ALPHA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <title>Dashboard | ALPHA Trading</title>
+    <meta name="description"
+        content="ALPHA Trading Platform Dashboard - SMC Tools, Course Progress, Economic Calendar and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="/static/protection.js"></script>
+    <script src="/static/chat.js"></script>
     <style>
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            padding: 2rem;
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a855f7;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #080d1a;
+            --bg-2: #0f172a;
+            --card: rgba(255, 255, 255, 0.04);
+            --card-hover: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(99, 102, 241, 0.5);
+            --text: #e2e8f0;
+            --text-dim: rgba(255, 255, 255, 0.45);
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(168, 85, 247, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* NAV */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: rgba(8, 13, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text);
+            background: var(--card);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .username-badge {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* LAYOUT */
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 64px);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        /* SMC CALCULATOR */
+        .calc-widget {
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .widget-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .calc-field {
+            margin-bottom: 1rem;
+        }
+
+        .calc-field label {
+            display: block;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+
+        .calc-field input,
+        .calc-field select {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            padding: 0.6rem 0.75rem;
+            transition: border-color 0.2s;
+        }
+
+        .calc-field input:focus,
+        .calc-field select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .calc-field input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .calc-result {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 10px;
+            padding: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+        }
+
+        .calc-result-label {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        .calc-result-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .btn-sm {
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary-sm {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 100%;
+            padding: 0.65rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary-sm:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-copy {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            width: 100%;
+            padding: 0.5rem;
+        }
+
+        .btn-copy:hover {
+            background: rgba(99, 102, 241, 0.25);
+        }
+
+        /* Sidebar Nav Links */
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.9rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav-item:hover {
+            color: var(--text);
+            background: var(--card);
+        }
+
+        .sidebar-nav-item.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .sidebar-nav-item .icon {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            padding: 2.5rem;
+            overflow-y: auto;
+        }
+
+        /* GREETING */
+        .greeting {
+            margin-bottom: 2.5rem;
+        }
+
+        .greeting h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.35rem;
+        }
+
+        .greeting p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        /* STATS ROW */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
             margin-bottom: 2rem;
-            transition: transform 0.2s;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: var(--card-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 0.35rem;
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        /* PROGRESS SECTION */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .progress-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .progress-pct {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .progress-sub {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .progress-bar-track {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 100px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 100px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px var(--glow);
+        }
+
+        .progress-detail {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+        }
+
+        .progress-cta {
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            text-decoration: none;
+            padding: 0.65rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .progress-cta:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* 2-COL GRID */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.75rem;
+            transition: all 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--card-hover);
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 99px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            background: rgba(99, 102, 241, 0.2);
-            color: #818cf8;
+        /* BROKER CARDS */
+        .broker-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .broker-card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .broker-btn-exness {
+            width: 100%;
+            justify-content: center;
+            background: linear-gradient(135deg, #ca8a04, #eab308);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(234, 179, 8, 0.2);
+        }
+
+        .broker-btn-exness:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(234, 179, 8, 0.4);
+            color: #000;
+        }
+
+        .broker-btn-coinexx {
+            width: 100%;
+            justify-content: center;
+            background: linear-gradient(135deg, #0891b2, #06b6d4);
+            color: white;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.2);
+        }
+
+        .broker-btn-coinexx:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+            color: white;
+        }
+
+        /* ACCESS CARD */
+        .access-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
             margin-bottom: 1rem;
         }
+
+        .badge-paid {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-unpaid {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .card-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            margin-top: 0.75rem;
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-green:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-amber {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-amber:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* ECONOMIC CALENDAR */
+        .calendar-frame {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .calendar-card {
+            margin-bottom: 2rem;
+        }
+
+        .calendar-loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        .news-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-impact {
+            flex-shrink: 0;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-top: 6px;
+        }
+
+        .impact-high {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+
+        .impact-medium {
+            background: #f59e0b;
+        }
+
+        .news-time {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            flex-shrink: 0;
+            width: 55px;
+        }
+
+        .news-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .news-currency {
+            flex-shrink: 0;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 0.4rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* ============ SMC GLOSSARY DRAWER ============ */
+        .glossary-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 500;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.85rem 1.4rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 30px var(--glow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glossary-fab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px var(--glow);
+        }
+
+        .glossary-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 490;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .glossary-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .glossary-drawer {
+            position: fixed;
+            top: 0;
+            right: -420px;
+            width: 420px;
+            max-width: 95vw;
+            height: 100vh;
+            background: #111827;
+            border-left: 1px solid var(--border);
+            z-index: 600;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glossary-drawer.open {
+            right: 0;
+        }
+
+        .glossary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .glossary-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .close-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glossary-search-wrap {
+            padding: 1rem 1.5rem;
+        }
+
+        .glossary-search {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            padding: 0.65rem 1rem;
+        }
+
+        .glossary-search:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .glossary-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .glossary-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .glossary-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .glossary-term {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            transition: border-color 0.2s;
+        }
+
+        .glossary-term:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .glossary-term dt {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.35rem;
+        }
+
+        .glossary-tag {
+            display: inline-block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .glossary-term dd {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            list-style: none;
+        }
+
+        /* QUICK LINKS */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-link {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+
+        .quick-link:hover {
+            background: var(--card-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        .quick-link .ql-icon {
+            font-size: 1.4rem;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 5rem;
+            right: 2rem;
+            z-index: 900;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.875rem;
+            color: var(--text);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Mobile Hamburger & Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.3rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .mobile-nav-drawer {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 13, 26, 0.98);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 199;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            animation: slideDown 0.3s ease;
+        }
+
+        .mobile-nav-drawer.open {
+            display: flex;
+        }
+
+        .mobile-nav-drawer .nav-link {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .mobile-nav-drawer .nav-link.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+            color: #fff;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .main {
+                padding: 1rem 0.85rem 3rem !important;
+            }
+
+            .two-col {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.75rem;
+            }
+
+            .stat-card {
+                padding: 1rem !important;
+            }
+
+            .stat-value {
+                font-size: 1.5rem !important;
+            }
+
+            .quick-links {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.6rem;
+            }
+
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-user .username-badge {
+                display: none;
+            }
+
+            .welcome-banner {
+                padding: 1.5rem 1.25rem !important;
+            }
+
+            .welcome-banner h1 {
+                font-size: 1.5rem !important;
+            }
+
+            .card {
+                padding: 1.25rem !important;
+            }
+
+            .glossary-fab {
+                bottom: 1.25rem;
+                right: 1.25rem;
+                padding: 0.65rem 1.1rem;
+                font-size: 0.8rem;
+            }
+
+            .glossary-drawer {
+                width: 100vw;
+                max-width: 100vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeUp 0.5s ease-out both;
+        }
+
+        .fade-up-1 {
+            animation-delay: 0.05s;
+        }
+
+        .fade-up-2 {
+            animation-delay: 0.1s;
+        }
+
+        .fade-up-3 {
+            animation-delay: 0.15s;
+        }
+
+        .fade-up-4 {
+            animation-delay: 0.2s;
+        }
     </style>
-    <script src="/static/protection.js"></script>
-    <script src="/static/chat.js"></script>
 </head>
 
 <body>
 
-    <div class="container fade-in" style="width: 600px; text-align: center;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h1 style="margin:0;">Dashboard</h1>
-            <span class="status-badge">{{ user.username }}</span>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+            <button class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Toggle navigation">☰</button>
+            <span class="nav-logo">⚡ ALPHA</span>
         </div>
-
-        <div class="card">
-            <h3>Advanced Security Course</h3>
-            <p style="color: rgba(255,255,255,0.6); margin-bottom: 1.5rem;">
-                {% if user.has_paid %}
-                You have full access to the course materials.
-                {% else %}
-                Pay to unlock SMC course
-                {% endif %}
-            </p>
-
-            {% if user.has_paid %}
-            <a href="/course" class="btn-primary"
-                style="text-decoration: none; display: inline-block; background: linear-gradient(135deg, #10b981, #059669);">
-                Access Content &rarr;
-            </a>
-            {% else %}
-            <a href="/buy-crypto" class="btn-primary"
-                style="text-decoration: none; display: inline-block; background: linear-gradient(135deg, #f59e0b, #d97706); position: relative; width: 100%; text-align: center;">
-                💰 Pay with Crypto - $50
-                <span
-                    style="position: absolute; top: -8px; right: -8px; background: #10b981; color: white; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 10px;">
-                    No KYC
-                </span>
-            </a>
-
-            <p style="margin-top: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.5); text-align: center;">
-                ✅ Bitcoin • Ethereum • USDT • Litecoin accepted
-            </p>
-            {% endif %}
+        <div class="nav-links">
+            <a href="/home" class="nav-link active">Dashboard</a>
+            <a href="/course" class="nav-link">📚 Course</a>
+            <a href="/chart" class="nav-link">📊 Chart</a>
+            <a href="/journal" class="nav-link">📓 Journal</a>
+            <a href="/profile" class="nav-link">👤 Profile</a>
+            <a href="/live" class="nav-link">📻 Live</a>
+            <a href="/gallery" class="nav-link">🖼️ Gallery</a>
         </div>
+        <div class="nav-user">
+            <div class="avatar">{{ user.username[0]|upper }}</div>
+            <span class="username-badge">{{ user.username }}</span>
+            <a href="/logout" class="nav-link" style="color: rgba(239,68,68,0.7); padding: 0.4rem 0.75rem;">Logout</a>
+        </div>
+    </nav>
 
-        <a href="/logout" class="btn-primary"
-            style="background: rgba(255,255,255,0.1); width: auto; padding: 0.8rem 2rem; text-decoration: none; font-size: 0.9rem;">
-            Logout
-        </a>
+    <!-- MOBILE NAV DRAWER -->
+    <div class="mobile-nav-drawer" id="mobileNavDrawer">
+        <a href="/home" class="nav-link active">🏠 Dashboard</a>
+        <a href="/course" class="nav-link">📚 SMC Course</a>
+        <a href="/chart" class="nav-link">📊 Chart Scanner</a>
+        <a href="/journal" class="nav-link">📓 Trading Journal</a>
+        <a href="/profile" class="nav-link">👤 Profile & Referrals</a>
+        <a href="/live" class="nav-link">📻 Live Room</a>
+        <a href="/gallery" class="nav-link">🖼️ Alpha Gallery</a>
+        {% if user.role == 'admin' %}
+        <a href="/admin" class="nav-link" style="color: var(--primary);">⚙️ Admin Panel</a>
+        {% endif %}
+        <a href="/logout" class="nav-link" style="color: rgba(239,68,68,0.9);">🚪 Logout</a>
     </div>
 
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <!-- Sidebar Navigation -->
+            <div>
+                <div class="widget-title">📌 Navigation</div>
+                <nav class="sidebar-nav">
+                    <a href="/home" class="sidebar-nav-item active"><span class="icon">🏠</span> Dashboard</a>
+                    <a href="/course" class="sidebar-nav-item"><span class="icon">📚</span> Course Videos</a>
+                    <a href="/journal" class="sidebar-nav-item"><span class="icon">📓</span> My Journal</a>
+                    <a href="/profile" class="sidebar-nav-item"><span class="icon">👤</span> Profile & Referrals</a>
+                    <a href="/live" class="sidebar-nav-item"><span class="icon">📻</span> Alpha Live</a>
+                    <a href="/gallery" class="sidebar-nav-item"><span class="icon">🖼️</span> Alpha Gallery</a>
+                    {% if user.role == 'admin' %}
+                    <a href="/admin" class="sidebar-nav-item"><span class="icon">⚙️</span> Admin Panel</a>
+                    {% endif %}
+                </nav>
+            </div>
+
+            <!-- SMC POSITION CALCULATOR -->
+            <div class="calc-widget">
+                <div class="widget-title">🧮 SMC Position Calculator</div>
+
+                <div class="calc-field">
+                    <label>Account Balance (USD)</label>
+                    <input type="number" id="calcBalance" placeholder="e.g. 10000" min="0" step="100">
+                </div>
+                <div class="calc-field">
+                    <label>Risk %</label>
+                    <input type="number" id="calcRisk" placeholder="e.g. 1" min="0.1" max="10" step="0.1">
+                </div>
+                <div class="calc-field">
+                    <label>Stop Loss (Pips)</label>
+                    <input type="number" id="calcSL" placeholder="e.g. 20" min="1" step="1">
+                </div>
+                <div class="calc-field">
+                    <label>Instrument</label>
+                    <select id="calcInstrument">
+                        <option value="10">XAUUSD (Gold) – $10/pip</option>
+                        <option value="1">EURUSD – $1/pip</option>
+                        <option value="1">GBPUSD – $1/pip</option>
+                        <option value="0.1">USDJPY – $0.1/pip</option>
+                        <option value="1">AUDUSD – $1/pip</option>
+                    </select>
+                </div>
+
+                <button class="btn-sm btn-primary-sm" onclick="calculateLotSize()">Calculate Lot Size</button>
+
+                <div class="calc-result">
+                    <div>
+                        <div class="calc-result-label">Recommended Lot Size</div>
+                    </div>
+                    <div class="calc-result-value" id="calcOutput">—</div>
+                </div>
+                <button class="btn-sm btn-copy" onclick="copyLotSize()" style="margin-top:0.5rem;">📋 Copy to
+                    Clipboard</button>
+            </div>
+
+            <!-- External Links -->
+            <div>
+                <div class="widget-title">🔗 Quick Tools</div>
+                <div class="sidebar-nav">
+                    <a href="/chart" class="sidebar-nav-item">
+                        <span class="icon">📊</span> Chart Scanner
+                    </a>
+                    <a href="#trade-now" class="sidebar-nav-item">
+                        <span class="icon">🚀</span> Trade Now
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main">
+            <!-- Greeting -->
+            <div class="greeting fade-up">
+                <h1>Welcome back, {{ user.username }} 👋</h1>
+                <p>Here's your ALPHA trading command center.</p>
+            </div>
+
+            <!-- STATS ROW -->
+            <div class="stats-row fade-up fade-up-1" id="statsRow">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-value" id="statsCompleted">—</div>
+                    <div class="stat-label">Lessons Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-value" id="statsPercent">—</div>
+                    <div class="stat-label">Course Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📓</div>
+                    <div class="stat-value" id="statsJournal">—</div>
+                    <div class="stat-label">Journal Entries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔗</div>
+                    <div class="stat-value" id="statsReferrals">—</div>
+                    <div class="stat-label">Referrals</div>
+                </div>
+            </div>
+
+            <!-- PROGRESS CARD -->
+            <div class="section-title fade-up fade-up-2">📊 Course Progress</div>
+            <div class="progress-card fade-up fade-up-2">
+                <div class="progress-header">
+                    <div>
+                        <div class="progress-pct" id="progressPct">0%</div>
+                        <div class="progress-sub">SMC Trading Mastery Course</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:0.9rem;font-weight:600;color:white;" id="progressFraction">0 / 54</div>
+                        <div class="progress-sub">lessons done</div>
+                    </div>
+                </div>
+                <div class="progress-bar-track">
+                    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+                </div>
+                <div class="progress-detail" id="progressDetail">Loading your progress...</div>
+                {% if user.has_paid %}
+                <a href="/course" class="progress-cta">▶ Continue Learning →</a>
+                {% else %}
+                <a href="/buy-crypto" class="progress-cta"
+                    style="background:linear-gradient(135deg,#f59e0b,#d97706);">💰 Unlock Full Course →</a>
+                {% endif %}
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="section-title fade-up fade-up-3">⚡ Quick Actions</div>
+            <div class="quick-links fade-up fade-up-3">
+                <a href="/course" class="quick-link">
+                    <span class="ql-icon">🎥</span> Watch Videos
+                </a>
+                <a href="/journal" class="quick-link">
+                    <span class="ql-icon">✍️</span> Log a Trade
+                </a>
+                <a href="/profile" class="quick-link">
+                    <span class="ql-icon">🔗</span> My Referral Link
+                </a>
+                <a href="/chart" class="quick-link">
+                    <span class="ql-icon">📊</span> Open Chart
+                </a>
+                <button onclick="toggleGlossary()" class="quick-link" style="border:none;cursor:pointer;">
+                    <span class="ql-icon">📖</span> SMC Dictionary
+                </button>
+                <a href="#trade-now" class="quick-link">
+                    <span class="ql-icon">🚀</span> Trade Now
+                </a>
+            </div>
+
+            <!-- BROKER SELECTION SECTION -->
+            <div class="section-title fade-up fade-up-4" id="trade-now">🚀 Trade Now - Choose Your Broker</div>
+            <div class="two-col fade-up fade-up-4">
+
+                <!-- Exness Card -->
+                <div class="card broker-card"
+                    style="display:flex;flex-direction:column;justify-content:space-between;border-top: 3px solid #facc15;position:relative;overflow:hidden;">
+                    <div
+                        style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(250, 204, 21, 0.08);border-radius:50%;filter:blur(30px);z-index:0;pointer-events:none;">
+                    </div>
+                    <div style="position:relative;z-index:1;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+                            <!-- Exness Logo -->
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/Exness_logo_2021.svg"
+                                alt="Exness" style="height: 24px; filter: brightness(0) invert(1);"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div
+                                style="display:none; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; color: #facc15; align-items:center; gap:0.5rem;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#facc15"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                EXNESS
+                            </div>
+                            <div class="access-badge"
+                                style="background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3); margin-bottom: 0;">
+                                ⭐ Recommended</div>
+                        </div>
+                        <p style="font-size:0.875rem;color:var(--text-dim);margin-bottom:1.5rem;line-height:1.6;">Our
+                            top pick for trading Forex, Gold (XAUUSD), and indices. Experience lightning-fast execution,
+                            raw spreads, and instant withdrawals.</p>
+                    </div>
+                    <a href="https://one.exnessonelink.com/a/l83pvivyl4" target="_blank"
+                        class="card-action-btn broker-btn-exness" style="position:relative;z-index:1;">Register on
+                        Exness →</a>
+                </div>
+
+                <!-- Coinexx Card -->
+                <div class="card broker-card"
+                    style="display:flex;flex-direction:column;justify-content:space-between;border-top: 3px solid #22d3ee;position:relative;overflow:hidden;">
+                    <div
+                        style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(34, 211, 238, 0.08);border-radius:50%;filter:blur(30px);z-index:0;pointer-events:none;">
+                    </div>
+                    <div style="position:relative;z-index:1;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem;">
+                            <!-- Coinexx Logo -->
+                            <img src="https://my.coinexx.com/assets/img/logo-dark.png" alt="Coinexx"
+                                style="height: 24px; filter: brightness(0) invert(1);"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div
+                                style="display:none; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; color: #22d3ee; align-items:center; gap:0.5rem;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="#22d3ee" stroke-width="2" />
+                                    <path d="M12 6v12M8 10h8M8 14h8" stroke="#22d3ee" stroke-width="2"
+                                        stroke-linecap="round" />
+                                </svg>
+                                COINEXX
+                            </div>
+                            <div class="access-badge"
+                                style="background: rgba(34, 211, 238, 0.15); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.3); margin-bottom: 0;">
+                                🪙 Crypto Specialist</div>
+                        </div>
+                        <p style="font-size:0.875rem;color:var(--text-dim);margin-bottom:1.5rem;line-height:1.6;">The
+                            ultimate choice for trading with crypto pairs. High leverage for cryptocurrency assets and
+                            low-fee crypto deposits.</p>
+                    </div>
+                    <a href="https://my.coinexx.com/register?refLink=NTAxODM5&refRm=11" target="_blank"
+                        class="card-action-btn broker-btn-coinexx" style="position:relative;z-index:1;">Register on
+                        Coinexx →</a>
+                </div>
+
+            </div>
+
+            <!-- TWO COLUMNS -->
+            <div class="two-col fade-up fade-up-4">
+                <!-- Course Access Card -->
+                <div class="card">
+                    <div class="section-title" style="margin-bottom:0.75rem;">🎓 Course Access</div>
+                    {% if user.has_paid %}
+                    <div class="access-badge badge-paid">✅ Full Access Active</div>
+                    <p style="font-size:0.875rem;color:var(--text-dim);margin-bottom:0.5rem;">You have complete access
+                        to all 52 lessons of the SMC Trading Mastery Course.</p>
+                    <a href="/course" class="card-action-btn btn-green">📚 Access Course Library →</a>
+                    {% else %}
+                    <div class="access-badge badge-unpaid">🔒 No Access</div>
+                    <p style="font-size:0.875rem;color:var(--text-dim);margin-bottom:0.5rem;">Unlock the full SMC
+                        Trading Mastery Course with one-time payment.</p>
+                    <a href="/buy-crypto" class="card-action-btn btn-amber">💰 Pay with Crypto – $50 →</a>
+                    {% endif %}
+                </div>
+
+                <!-- Referral Teaser -->
+                <div class="card">
+                    <div class="section-title" style="margin-bottom:0.75rem;">🔗 Referral Program</div>
+                    <p style="font-size:0.875rem;color:var(--text-dim);margin-bottom:1rem;">Earn $10 for each friend who
+                        joins and trades. Share your unique referral link!</p>
+                    <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:0.65rem 0.9rem;font-size:0.8rem;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+                        id="refLinkPreview">Loading your referral link...</div>
+                    <button onclick="copyRefLink()" class="card-action-btn"
+                        style="background:rgba(99,102,241,0.15);color:var(--primary);border:1px solid rgba(99,102,241,0.3);text-decoration:none;margin-top:0.75rem;">📋
+                        Copy Referral Link</button>
+                    <a href="/profile" class="card-action-btn"
+                        style="background:transparent;color:var(--text-dim);border:1px solid var(--border);text-decoration:none;margin-top:0.5rem;margin-left:0;font-size:0.8rem;">View
+                        Full Dashboard →</a>
+                </div>
+            </div>
+
+            <!-- ECONOMIC CALENDAR -->
+            <div class="section-title">📅 Live Economic Calendar</div>
+            <div class="card calendar-card" id="calendarCard">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+                    <div>
+                        <div style="font-size:0.875rem;font-weight:600;color:white;">High-Impact USD & XAU/Gold Events
+                        </div>
+                        <div style="font-size:0.78rem;color:var(--text-dim);margin-top:0.2rem;">Live data – filtered for
+                            volatility impact</div>
+                    </div>
+                    <button class="refresh-btn" onclick="loadCalendar()">🔄 Refresh</button>
+                </div>
+                <div id="calendarContent">
+                    <div class="calendar-loading">⏳ Loading economic events...</div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- SMC GLOSSARY DRAWER OVERLAY -->
+    <div class="glossary-overlay" id="glossaryOverlay" onclick="toggleGlossary()"></div>
+
+    <!-- SMC GLOSSARY DRAWER -->
+    <div class="glossary-drawer" id="glossaryDrawer">
+        <div class="glossary-header">
+            <span class="glossary-title">📖 SMC Dictionary</span>
+            <button class="close-btn" onclick="toggleGlossary()">✕</button>
+        </div>
+        <div class="glossary-search-wrap">
+            <input class="glossary-search" type="text" id="glossarySearch"
+                placeholder="Search terms (BOS, FVG, OB...)..." oninput="filterGlossary(this.value)">
+        </div>
+        <dl class="glossary-list" id="glossaryList"></dl>
+    </div>
+
+    <!-- FAB -->
+    <button class="glossary-fab" onclick="toggleGlossary()">📖 SMC Dictionary</button>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============ DATA ============
+        const USERNAME = "{{ user.username }}";
+        const HAS_PAID = {{ 'true' if user.has_paid else 'false' }};
+
+        const SMC_TERMS = [
+            { term: "BOS", tag: "Structure", definition: "Break of Structure – when price breaks a previous significant high or low, indicating a change in market direction. A bullish BOS occurs when price breaks above a previous swing high; bearish BOS is the opposite." },
+            { term: "CHoCH", tag: "Structure", definition: "Change of Character – the first sign of a potential trend reversal. It is typically confirmed when price breaks the last opposing swing point before a series of BOS in the new direction." },
+            { term: "FVG", tag: "Imbalance", definition: "Fair Value Gap – a 3-candle imbalance where the wicks of the first and third candles do not overlap, leaving an untested price zone. FVGs act as magnets for price to revisit, offering high-probability entry areas." },
+            { term: "Order Block", tag: "Supply & Demand", definition: "A consolidation zone – the last bullish or bearish candle before an impulsive move away. Institutional orders are placed here, and price often returns to 'fill' these blocks before continuing in the original direction." },
+            { term: "Liquidity", tag: "Liquidity", definition: "Pools of stop-loss orders accumulated above swing highs (buy-side liquidity) or below swing lows (sell-side liquidity). Smart money hunts these areas to fill large orders before reversing." },
+            { term: "BSL / SSL", tag: "Liquidity", definition: "Buy-Side Liquidity (BSL) sits above swing highs as resting buy orders; Sell-Side Liquidity (SSL) sits below swing lows as resting sell stops. Institutions target these pools to execute large positions efficiently." },
+            { term: "Inducement", tag: "Manipulation", definition: "A trap engineered by smart money to trigger retail trader entries in the wrong direction before a major move. It typically appears as a false break or wick that sweeps liquidity before reversing." },
+            { term: "Premium / Discount", tag: "Zones", definition: "The premium zone is the upper 50% of a price range (selling area); the discount zone is the lower 50% (buying area). Smart money buys in discount and sells in premium, as defined by the Fibonacci 50% equilibrium." },
+            { term: "NWOG / NDOG", tag: "Gaps", definition: "New Week Opening Gap / New Day Opening Gap – the price gap between the previous period's close and the new period's open. These gaps are frequently filled and serve as reference points for intraday and swing setups." },
+            { term: "MSS", tag: "Structure", definition: "Market Structure Shift – an early, aggressive version of a CHoCH. An MSS is confirmed by a large displacement candle breaking a key structural level, signalling a potential shift in trend before full confirmation." },
+            { term: "POI", tag: "Zones", definition: "Point of Interest – any high-probability zone where smart money is likely to be active. POIs include Order Blocks, FVGs, liquidity pools, and opening gaps." },
+            { term: "Displacement", tag: "Price Action", definition: "A strong, impulsive candle (or sequence of candles) that moves rapidly in one direction, leaving behind imbalances. True displacement has minimal wicks and closes near the candle's extreme, indicating aggressive institutional participation." },
+            { term: "Mitigation", tag: "Zones", definition: "When price returns to an Order Block or FVG to 'mitigate' previously placed orders. After mitigation, the position is typically closed or reduced, and price can then continue or reverse." },
+            { term: "Turtle Soup", tag: "Manipulation", definition: "A strategy originally from Larry Williams, adapted in SMC: a setup where price sweeps a 20-day high or low (grabbing liquidity) then reverses. The entry is taken as price re-enters the prior range after the sweep." },
+            { term: "CISD", tag: "Structure", definition: "Change In State of Delivery – a shift from bearish to bullish delivery (or vice versa) in the market's internal structure. Confirmed when an internal swing high or low is broken, signalling institutions have switched their execution direction." }
+        ];
+
+        // ============ GLOSSARY ============
+        function renderGlossary(terms) {
+            const list = document.getElementById('glossaryList');
+            list.innerHTML = '';
+            if (!terms.length) {
+                list.innerHTML = '<p style="color:var(--text-dim);font-size:0.875rem;text-align:center;padding:2rem 0;">No terms found.</p>';
+                return;
+            }
+            terms.forEach(t => {
+                const el = document.createElement('div');
+                el.className = 'glossary-term';
+                el.innerHTML = `<dt>${t.term}</dt><span class="glossary-tag">${t.tag}</span><dd>${t.definition}</dd>`;
+                list.appendChild(el);
+            });
+        }
+        renderGlossary(SMC_TERMS);
+
+        function filterGlossary(q) {
+            const lower = q.toLowerCase();
+            const filtered = SMC_TERMS.filter(t =>
+                t.term.toLowerCase().includes(lower) ||
+                t.definition.toLowerCase().includes(lower) ||
+                t.tag.toLowerCase().includes(lower)
+            );
+            renderGlossary(filtered);
+        }
+
+        function toggleGlossary() {
+            const drawer = document.getElementById('glossaryDrawer');
+            const overlay = document.getElementById('glossaryOverlay');
+            drawer.classList.toggle('open');
+            overlay.classList.toggle('open');
+            if (drawer.classList.contains('open')) {
+                document.getElementById('glossarySearch').focus();
+            }
+        }
+
+        // ============ SMC CALCULATOR ============
+        let lastLotSize = 0;
+        function calculateLotSize() {
+            const balance = parseFloat(document.getElementById('calcBalance').value);
+            const risk = parseFloat(document.getElementById('calcRisk').value);
+            const sl = parseFloat(document.getElementById('calcSL').value);
+            const pipValue = parseFloat(document.getElementById('calcInstrument').value);
+
+            if (!balance || !risk || !sl || !pipValue) {
+                showToast('⚠️ Please fill all fields.', false);
+                return;
+            }
+
+            const riskAmount = (balance * risk) / 100;
+            const lotSize = riskAmount / (sl * pipValue * 10);
+            lastLotSize = Math.round(lotSize * 100) / 100;
+
+            document.getElementById('calcOutput').textContent = lastLotSize.toFixed(2) + ' lots';
+            showToast('✅ Lot size calculated!', true);
+        }
+
+        function copyLotSize() {
+            if (!lastLotSize) { showToast('Calculate first.', false); return; }
+            navigator.clipboard.writeText(lastLotSize.toFixed(2)).then(() => showToast('📋 Copied to clipboard!', true));
+        }
+
+        // ============ PROGRESS ============
+        function loadProgress() {
+            fetch('/api/progress')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) return;
+                    const pct = data.percentage;
+                    const done = data.completed_lessons.length;
+                    const total = data.total_lessons;
+
+                    document.getElementById('progressFill').style.width = pct + '%';
+                    document.getElementById('progressPct').textContent = pct + '%';
+                    document.getElementById('progressFraction').textContent = done + ' / ' + total;
+                    document.getElementById('progressDetail').textContent =
+                        done === 0 ? 'Start your first lesson to begin tracking progress.'
+                            : done === total ? '🎉 Congratulations! You have completed the entire course!'
+                                : `${total - done} lessons remaining. Keep going!`;
+                    document.getElementById('statsCompleted').textContent = done;
+                    document.getElementById('statsPercent').textContent = pct + '%';
+                })
+                .catch(() => {
+                    document.getElementById('progressDetail').textContent = 'Could not load progress.';
+                });
+        }
+
+        // ============ JOURNAL COUNT ============
+        function loadJournalCount() {
+            fetch('/api/journal')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('statsJournal').textContent = data.entries.length;
+                    }
+                }).catch(() => { });
+        }
+
+        // ============ REFERRAL LINK ============
+        let referralLink = '';
+        function loadReferral() {
+            fetch('/api/referral')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        referralLink = data.referral_link;
+                        document.getElementById('refLinkPreview').textContent = referralLink;
+                        document.getElementById('statsReferrals').textContent = data.total_referrals;
+                    }
+                }).catch(() => { });
+        }
+
+        function copyRefLink() {
+            if (!referralLink) return;
+            navigator.clipboard.writeText(referralLink).then(() => showToast('🔗 Referral link copied!', true));
+        }
+
+        // ============ ECONOMIC CALENDAR ============
+        const ECON_EVENTS = [
+            { time: '08:30', title: 'US Non-Farm Payrolls (NFP)', currency: 'USD', impact: 'high' },
+            { time: '08:30', title: 'US CPI (Inflation)', currency: 'USD', impact: 'high' },
+            { time: '14:00', title: 'FOMC Interest Rate Decision', currency: 'USD', impact: 'high' },
+            { time: '10:00', title: 'ISM Manufacturing PMI', currency: 'USD', impact: 'high' },
+            { time: '08:30', title: 'Jobless Claims', currency: 'USD', impact: 'medium' },
+            { time: '08:30', title: 'US PPI', currency: 'USD', impact: 'medium' },
+            { time: '10:00', title: 'CB Consumer Confidence', currency: 'USD', impact: 'medium' },
+            { time: '08:30', title: 'US Retail Sales', currency: 'USD', impact: 'high' },
+            { time: '09:45', title: 'S&P Global Manufacturing PMI', currency: 'USD', impact: 'medium' },
+            { time: '15:00', title: 'Fed Chair Speech', currency: 'USD', impact: 'high' },
+            { time: 'All Day', title: 'Gold (XAUUSD) Volatility Window – NFP Week', currency: 'XAU', impact: 'high' },
+            { time: 'All Day', title: 'Gold Seasonal Demand – Central Bank Activity', currency: 'XAU', impact: 'medium' }
+        ];
+
+        function loadCalendar() {
+            const container = document.getElementById('calendarContent');
+            container.innerHTML = '<div class="calendar-loading">⏳ Refreshing events...</div>';
+
+            setTimeout(() => {
+                let html = '';
+                ECON_EVENTS.forEach(ev => {
+                    html += `
+            <div class="news-item">
+                <div class="news-impact ${ev.impact === 'high' ? 'impact-high' : 'impact-medium'}"></div>
+                <div class="news-time">${ev.time}</div>
+                <div class="news-title">${ev.title}</div>
+                <div class="news-currency">${ev.currency}</div>
+            </div>`;
+                });
+                container.innerHTML = html;
+            }, 600);
+        }
+
+        // ============ TOAST ============
+        function showToast(msg, success = true) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast' + (success ? ' success' : '');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2800);
+        }
+
+        // ============ MOBILE NAV DRAWER ============
+        function toggleMobileNav() {
+            const drawer = document.getElementById('mobileNavDrawer');
+            if (drawer) {
+                drawer.classList.toggle('open');
+            }
+        }
+
+        // ============ INIT ============
+        document.addEventListener('DOMContentLoaded', function () {
+            loadProgress();
+            loadJournalCount();
+            loadReferral();
+            loadCalendar();
+        });
+    </script>
 </body>
 
 </html>

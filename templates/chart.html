@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Scanner | ALPHA</title>
+    <meta name="description"
+        content="ALPHA Chart Scanner – Professional TradingView Advanced Real-Time Charts with SMC & Technical Indicators.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #a020f0;
+            --primary-dim: rgba(160, 32, 240, 0.25);
+            --bg: #0b0e14;
+            --card: rgba(255, 255, 255, 0.03);
+            --border: rgba(160, 32, 240, 0.25);
+            --border-hover: rgba(160, 32, 240, 0.6);
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            height: 52px;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            background: rgba(11, 14, 20, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            justify-content: space-between;
+            flex-shrink: 0;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .nav-logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-shadow: 0 0 12px rgba(160, 32, 240, 0.5);
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.25rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: #fff;
+        }
+
+        /* ── SYMBOL BAR ── */
+        .symbol-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            overflow-x: auto;
+            flex-shrink: 0;
+            scrollbar-width: none;
+        }
+
+        .symbol-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sym-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+            margin-right: 0.25rem;
+        }
+
+        .sym-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-dim);
+            padding: 0.28rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sym-btn:hover {
+            border-color: var(--primary);
+            color: #fff;
+            background: rgba(160, 32, 240, 0.15);
+        }
+
+        .sym-btn.active {
+            background: var(--primary-dim);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(160, 32, 240, 0.35);
+        }
+
+        .sym-divider {
+            width: 1px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+            margin: 0 0.25rem;
+        }
+
+        /* ── MAIN LAYOUT ── */
+        .workspace {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 0;
+            overflow: hidden;
+        }
+
+        /* ── CHART AREA ── */
+        .chart-area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 1px solid var(--border);
+            background: #000;
+        }
+
+        .tradingview-widget-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        #tradingview_widget {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: rgba(0, 0, 0, 0.45);
+            gap: 0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary-dim);
+            border-radius: 4px;
+        }
+
+        .widget {
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .widget-head {
+            padding: 0.65rem 1rem;
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .widget-body {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+            .chart-area {
+                height: 65vh;
+                border-right: none;
+            }
+            .sidebar {
+                height: 35vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="/home" class="nav-logo">⚡ ALPHA</a>
+        <div class="nav-links">
+            <a href="/home" class="nav-link">Dashboard</a>
+            <a href="/course" class="nav-link">Course</a>
+            <a href="/chart" class="nav-link active" style="color:var(--primary)">Chart Scanner</a>
+            <a href="/journal" class="nav-link">Journal</a>
+            <a href="/live" class="nav-link">Live</a>
+            <a href="/gallery" class="nav-link">The Lab</a>
+            {% if user.role == 'admin' %}
+            <a href="/admin" class="nav-link" style="color:#fbbf24;">Admin</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- SYMBOL QUICK BAR -->
+    <div class="symbol-bar" id="symbolBar">
+        <span class="sym-label">Crypto:</span>
+        <button class="sym-btn active" onclick="switchSymbol('BINANCE:BTCUSDT', this)">BTC/USDT</button>
+        <button class="sym-btn" onclick="switchSymbol('BINANCE:ETHUSDT', this)">ETH/USDT</button>
+        <button class="sym-btn" onclick="switchSymbol('BINANCE:SOLUSDT', this)">SOL/USDT</button>
+        
+        <div class="sym-divider"></div>
+        <span class="sym-label">Forex & Metals:</span>
+        <button class="sym-btn" onclick="switchSymbol('OANDA:XAUUSD', this)">XAU/USD (Gold) 🥇</button>
+        <button class="sym-btn" onclick="switchSymbol('FX:EURUSD', this)">EUR/USD</button>
+        <button class="sym-btn" onclick="switchSymbol('FX:GBPUSD', this)">GBP/USD</button>
+        <button class="sym-btn" onclick="switchSymbol('OANDA:US30USD', this)">US30 (Dow)</button>
+        <button class="sym-btn" onclick="switchSymbol('OANDA:NAS100USD', this)">NAS100</button>
+    </div>
+
+    <!-- WORKSPACE -->
+    <div class="workspace">
+        <!-- ADVANCED TRADINGVIEW CHART EMBED -->
+        <div class="chart-area">
+            <div class="tradingview-widget-container">
+                <div id="tradingview_widget"></div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <!-- Economic Calendar -->
+            <div class="widget" style="height:350px; flex-shrink:0;">
+                <div class="widget-head">📅 Economic Calendar</div>
+                <div class="widget-body" style="padding:0; overflow:hidden;">
+                    <div class="tradingview-widget-container" style="height:100%;">
+                        <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+                        { "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%", "locale": "en", "importanceFilter": "-1,0,1" }
+                        </script>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Feed -->
+            <div class="widget" style="height:350px; flex-shrink:0;">
+                <div class="widget-head">📰 Real-Time Market News</div>
+                <div class="widget-body" style="padding:0; overflow:hidden;">
+                    <div class="tradingview-widget-container" style="height:100%;">
+                        <div class="tradingview-widget-container__widget" style="height:100%;"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+                        { "feedMode": "all_symbols", "colorTheme": "dark", "isTransparent": true, "displayMode": "regular", "width": "100%", "height": "100%", "locale": "en" }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Official TradingView Advanced Real-time Chart Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        let tvWidget = null;
+        let currentSymbol = 'BINANCE:BTCUSDT';
+
+        function initTradingView(symbol) {
+            tvWidget = new TradingView.widget({
+                "autosize": true,
+                "symbol": symbol || "BINANCE:BTCUSDT",
+                "interval": "15",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#0b0e14",
+                "enable_publishing": false,
+                "hide_top_toolbar": false,
+                "hide_legend": false,
+                "save_image": true,
+                "container_id": "tradingview_widget",
+                "withdateranges": true,
+                "allow_symbol_change": true,
+                "details": true,
+                "hotlist": true,
+                "calendar": true,
+                "studies": [
+                    "STD;SMA"
+                ]
+            });
+        }
+
+        function switchSymbol(symbol, btn) {
+            currentSymbol = symbol;
+            
+            // Update active button state
+            document.querySelectorAll('.sym-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            // Re-render widget with new symbol
+            const container = document.getElementById('tradingview_widget');
+            container.innerHTML = '';
+            initTradingView(symbol);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTradingView(currentSymbol);
+        });
+    </script>
+</body>
+</html>

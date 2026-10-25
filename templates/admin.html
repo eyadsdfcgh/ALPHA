@@ -4,100 +4,2056 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>ALPHA | Admin Dashboard</title>
+    <meta name="description" content="ALPHA Admin Dashboard – User & Subscription Management">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <script src="/static/protection.js"></script>
     <script src="/static/chat.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --panel: rgba(255, 255, 255, 0.03);
+            --border: rgba(160, 32, 240, 0.2);
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --primary: #A020F0;
+            --primary-dim: rgba(160, 32, 240, 0.15);
+            --primary-glow: rgba(160, 32, 240, 0.35);
+            --text: #f0f0ff;
+            --text-muted: rgba(240, 240, 255, 0.5);
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.15);
+            --red: #ef4444;
+            --red-dim: rgba(239, 68, 68, 0.15);
+            --gold: #f59e0b;
+            --gold-dim: rgba(245, 158, 11, 0.15);
+            --blue: #3b82f6;
+            --blue-dim: rgba(59, 130, 246, 0.15);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            padding: 1.5rem 1rem 4rem;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 30% -10%, rgba(160, 32, 240, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 80% 100%, rgba(120, 0, 200, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* ─── Header ─── */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #A020F0, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+        }
+
+        .page-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .page-title span {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+        }
+
+        /* ─── Stats bar ─── */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            transition: border-color 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border);
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .stat-value.purple {
+            color: var(--primary);
+        }
+
+        .stat-value.green {
+            color: var(--green);
+        }
+
+        .stat-value.gold {
+            color: var(--gold);
+        }
+
+        .stat-value.red {
+            color: var(--red);
+        }
+
+        .stat-value.blue {
+            color: var(--blue);
+        }
+
+        /* ─── Toolbar ─── */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.65rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #A020F0, #7c3aed);
+            color: white;
+            box-shadow: 0 4px 20px rgba(160, 32, 240, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(160, 32, 240, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.85rem;
+            font-size: 0.8rem;
+            border-radius: 7px;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+
+        .btn-edit:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.12);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        /* ─── Message ─── */
+        #adminMessage {
+            padding: 0.85rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        #adminMessage.success {
+            background: var(--green-dim);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
+        #adminMessage.error {
+            background: var(--red-dim);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        /* ─── Table ─── */
+        .table-wrap {
+            background: var(--panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            overflow: hidden;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 2.5rem;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.87rem;
+        }
+
+        .user-table th {
+            background: rgba(160, 32, 240, 0.08);
+            padding: 1rem 1.1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+            white-space: nowrap;
+        }
+
+        .user-table td {
+            padding: 0.9rem 1.1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+            color: var(--text);
+        }
+
+        .user-table tbody tr:hover {
+            background: rgba(160, 32, 240, 0.04);
+        }
+
+        .user-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ─── Badges ─── */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .badge-active {
+            background: var(--green-dim);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-expired {
+            background: var(--red-dim);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-permanent {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(160, 32, 240, 0.2));
+            color: var(--gold);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+
+        .badge-free {
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text-muted);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .badge-admin {
+            background: var(--primary-dim);
+            color: #d8b4fe;
+            border: 1px solid rgba(160, 32, 240, 0.35);
+        }
+
+        .badge-rank {
+            background: rgba(168, 85, 247, 0.12);
+            color: #c4b5fd;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        /* Days remaining pill */
+        .days-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .days-ok {
+            background: var(--green-dim);
+            color: #34d399;
+        }
+
+        .days-warn {
+            background: var(--gold-dim);
+            color: var(--gold);
+        }
+
+        .days-exp {
+            background: var(--red-dim);
+            color: #f87171;
+        }
+
+        .days-perm {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(160, 32, 240, 0.15));
+            color: var(--gold);
+        }
+
+        .days-none {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .login-count-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .login-count-badge .count {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            border-radius: 6px;
+            padding: 0.2rem 0.55rem;
+            font-weight: 800;
+        }
+
+        /* ─── KYC Badges ─── */
+        .badge-kyc-verified {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .badge-kyc-unverified {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .badge-kyc-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .badge-kyc-none {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-kyc {
+            background: rgba(160, 32, 240, 0.18);
+            color: #d8b4fe;
+            border: 1px solid rgba(160, 32, 240, 0.35);
+        }
+
+        .btn-kyc:hover {
+            background: rgba(160, 32, 240, 0.35);
+            color: #fff;
+        }
+
+        .btn-toggle-kyc {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-toggle-kyc:hover {
+            background: rgba(245, 158, 11, 0.3);
+        }
+
+        /* ─── KYC Modal Specifics ─── */
+        .kyc-modal-content {
+            max-width: 720px;
+        }
+
+        .kyc-doc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .kyc-doc-card {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .kyc-doc-preview {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #000;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .kyc-doc-preview:hover {
+            transform: scale(1.02);
+        }
+
+        .kyc-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .kyc-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .kyc-info-item .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .kyc-info-item .val {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* ─── Action cells ─── */
+        .action-cell {
+            display: flex;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+
+        /* ─── Modal ─── */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.visible {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #13101a;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 2.25rem;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(160, 32, 240, 0.15);
+            animation: slideIn 0.25s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-content h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.92rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(160, 32, 240, 0.15);
+        }
+
+        .form-control option {
+            background: #1a1025;
+        }
+
+        /* Toggle switch */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .toggle-row:hover {
+            border-color: var(--border);
+        }
+
+        .toggle-label {
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .toggle-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 46px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 26px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: var(--primary);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.06);
+            margin: 1.25rem 0;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* ─── Panel grid ─── */
+        .panels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 1.75rem;
+        }
+
+        .panel h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel .form-control+.form-control,
+        .panel .form-control+label,
+        .panel label+.form-control,
+        .panel .btn-primary {
+            margin-top: 0.75rem;
+        }
+
+        .panel .form-group {
+            margin-bottom: 0.75rem;
+        }
+
+        /* ─── Back link ─── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 2.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text);
+        }
+
+        /* ─── Loading skeleton ─── */
+        @keyframes shimmer {
+            0% {
+                background-position: -500px 0;
+            }
+
+            100% {
+                background-position: 500px 0;
+            }
+        }
+
+        .skeleton-row td {
+            padding: 0.9rem 1.1rem;
+        }
+
+        .skeleton-cell {
+            height: 16px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
+            background-size: 500px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .user-table {
+                font-size: 0.8rem;
+            }
+
+            .user-table th,
+            .user-table td {
+                padding: 0.7rem 0.8rem;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .user-table {
+                min-width: 750px;
+            }
+        }
+        .courses-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ─── Maintenance Button ─── */
+        .btn-maintenance-off {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fcd34d;
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+        .btn-maintenance-off:hover {
+            background: rgba(245, 158, 11, 0.25);
+            transform: translateY(-1px);
+        }
+        .btn-maintenance-on {
+            background: linear-gradient(135deg, rgba(245,158,11,0.3), rgba(239,68,68,0.2));
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.5);
+            box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+            animation: maintenancePulse 2s ease-in-out infinite;
+        }
+        .btn-maintenance-on:hover {
+            background: linear-gradient(135deg, rgba(245,158,11,0.45), rgba(239,68,68,0.3));
+            transform: translateY(-1px);
+        }
+        @keyframes maintenancePulse {
+            0%, 100% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.25); }
+            50% { box-shadow: 0 0 28px rgba(245, 158, 11, 0.5); }
+        }
+        .maintenance-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #f59e0b;
+            animation: blink 1.2s ease-in-out infinite;
+            display: inline-block;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        .courses-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .courses-header h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .courses-header-actions {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-export-courses {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-export-courses:hover {
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-import-courses {
+            background: rgba(59, 130, 246, 0.15);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-import-courses:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .course-card {
+            background: rgba(160, 32, 240, 0.04);
+            border: 1px solid rgba(160, 32, 240, 0.18);
+            border-radius: 18px;
+            padding: 1.5rem;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .course-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 24px rgba(160, 32, 240, 0.12);
+        }
+
+        .course-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .course-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .course-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .course-card-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .video-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 0.65rem 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .video-item:hover {
+            border-color: rgba(160, 32, 240, 0.3);
+        }
+
+        .video-num {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--primary);
+            background: var(--primary-dim);
+            border-radius: 6px;
+            padding: 0.2rem 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .video-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .video-name {
+            font-size: 0.87rem;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-url-preview {
+            font-size: 0.73rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .video-actions {
+            display: flex;
+            gap: 0.35rem;
+            flex-shrink: 0;
+        }
+
+        .add-video-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .empty-courses {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            border: 2px dashed rgba(160, 32, 240, 0.15);
+            border-radius: 18px;
+        }
+
+        .empty-courses .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Add-video inline form */
+        .add-video-form {
+            margin-top: 0.75rem;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 1rem;
+            display: none;
+        }
+
+        .add-video-form.open {
+            display: block;
+        }
+
+        .add-video-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .courses-grid { grid-template-columns: 1fr; }
+            .add-video-form .form-row { grid-template-columns: 1fr; }
+            .courses-header { flex-direction: column; align-items: flex-start; }
+        }
+
+        /* ─── Global Responsive Overrides ─── */
+        @media (max-width: 1024px) {
+            .stats-bar {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem 0.75rem 3rem; }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.4rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .logo { font-size: 1.4rem; }
+            .page-title { font-size: 1rem; }
+            .page-title span { display: block; margin-left: 0; }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+            .stat-value { font-size: 1.6rem; }
+            .stat-card { padding: 0.85rem 1rem; }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar-left {
+                flex-direction: column;
+                width: 100%;
+            }
+            .toolbar-left .btn,
+            .toolbar > .btn { width: 100%; justify-content: center; }
+
+            .user-table { font-size: 0.78rem; }
+            .user-table th, .user-table td { padding: 0.65rem 0.75rem; }
+
+            .panels-grid { grid-template-columns: 1fr; }
+
+            .courses-grid { grid-template-columns: 1fr; }
+            .courses-header { flex-direction: column; align-items: stretch; }
+            .courses-header-actions { flex-direction: column; }
+            .courses-header-actions .btn { width: 100%; justify-content: center; }
+
+            .kyc-doc-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 1.5rem 1rem; max-width: 95vw; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 0.75rem 0.5rem 3rem; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
+            .stat-value { font-size: 1.4rem; }
+            .btn { padding: 0.6rem 0.9rem; font-size: 0.82rem; }
+            .btn-sm { padding: 0.35rem 0.65rem; font-size: 0.75rem; }
+            .user-table { min-width: 700px; }
+        }
+    </style>
 </head>
 
 <body>
-
-    <div class="container admin-container fade-in">
-        <h1>User Management</h1>
-        <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="btn-secondary" onclick="exportUsers()" title="Export all users to JSON file">
-                    📥 Export Users
-                </button>
-                <button class="btn-secondary" onclick="document.getElementById('importFile').click()" title="Import users from JSON file">
-                    📤 Import Users
-                </button>
-                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importUsers(event)">
+    <div class="page-wrap">
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <div class="logo">⚡ ALPHA</div>
             </div>
-            <button class="btn-primary" onclick="openCreateModal()">+ Create New User</button>
+            <div>
+                <div class="page-title">Admin Dashboard <span>User & Subscription Management</span></div>
+            </div>
         </div>
-        <div id="adminMessage" class="message"></div>
 
-        <table class="user-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="userTableBody">
-                <!-- Rows injected by JS -->
-            </tbody>
-        </table>
+        <!-- Stats bar -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value purple" id="statTotal">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Subs</div>
+                <div class="stat-value green" id="statActive">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Permanent</div>
+                <div class="stat-value gold" id="statPerm">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Expired</div>
+                <div class="stat-value red" id="statExpired">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Logins</div>
+                <div class="stat-value blue" id="statLogins">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">🪪 KYC Verified</div>
+                <div class="stat-value green" id="statKycVerified">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">⚠️ KYC Pending/Unverified</div>
+                <div class="stat-value gold" id="statKycUnverified">—</div>
+            </div>
+        </div>
 
-        <div style="margin-top: 2rem; text-align: center;">
-            <a href="/" style="color: rgba(255,255,255,0.5); text-decoration: none;">&larr; Back to Home</a>
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <a href="/admin/payments" class="btn btn-primary"
+                    style="background: linear-gradient(135deg, #10b981, #059669);">&#128182; Manage Manual Payments</a>
+                <button class="btn btn-secondary" onclick="exportUsers()">&#128229; Export</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">&#128228;
+                    Import</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importUsers(event)">
+                <!-- Maintenance Toggle -->
+                <button id="maintenanceBtn" class="btn btn-maintenance-off" onclick="toggleMaintenance()" title="تفعيل/إيقاف وضع الصيانة">
+                    &#128295; <span id="maintenanceBtnText">وضع الصيانة</span>
+                </button>
+            </div>
+            <button class="btn btn-primary" onclick="openCreateModal()">&#65291; New User</button>
+        </div>
+
+        <!-- Message -->
+        <div id="adminMessage"></div>
+
+        <!-- Users Table -->
+        <div class="table-wrap">
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Rank</th>
+                        <th>Status</th>
+                        <th>🪪 KYC Status</th>
+                        <th>Subscription</th>
+                        <th>⏳ Days Left</th>
+                        <th>🔑 Activity</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- JS injected -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Admin panels -->
+        <div class="panels-grid">
+            <!-- Live Room Settings -->
+            <div class="panel">
+                <h2>📻 Live Room Settings</h2>
+                <form id="liveSettingsForm" onsubmit="updateLiveSettings(event)">
+                    <div class="form-group">
+                        <label class="form-label">Video Embed URL</label>
+                        <input class="form-control" type="text" id="liveUrl" placeholder="YouTube / Twitch embed link"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Next Session</label>
+                        <input class="form-control" type="text" id="liveNextSession"
+                            placeholder="e.g. Tomorrow 10 AM EST" required>
+                    </div>
+                    <label class="toggle-row" style="margin-bottom: 0.75rem;">
+                        <div>
+                            <div class="toggle-label">🔴 Currently LIVE</div>
+                            <div class="toggle-sub">Toggle when broadcast is active</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="liveIsLive">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </label>
+                    <button type="submit" class="btn btn-primary" style="width:100%">Update Live Settings</button>
+                </form>
+            </div>
+
+            <!-- Native Broadcast Settings -->
+            <div class="panel">
+                <h2>📹 Native Broadcast (WebRTC)</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Broadcast your camera or screen directly to viewers.</p>
+                <div class="form-group">
+                    <button id="startCamBtn" class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="startNativeBroadcast('camera')">🎥 Start Camera Broadcast</button>
+                    <button id="startScreenBtn" class="btn btn-secondary" style="width:100%; margin-bottom:0.5rem;" onclick="startNativeBroadcast('screen')">💻 Start Screen Broadcast</button>
+                    <button id="stopBroadcastBtn" class="btn btn-delete" style="width:100%; display:none;" onclick="stopNativeBroadcast()">🛑 Stop Broadcast</button>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <video id="localVideo" autoplay muted style="width: 100%; border-radius: 10px; background: #000; border: 1px solid var(--border); display: none;"></video>
+                </div>
+                <div id="viewerCount" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--green); display: none;">👁️ Viewers: 0</div>
+            </div>
+
+            <!-- Gallery Upload -->
+            <div class="panel">
+                <h2>🖼️ Upload Gallery Image</h2>
+                <form id="galleryUploadForm" onsubmit="uploadGalleryImage(event)">
+                    <div class="form-group">
+                        <label class="form-label">Chart Title</label>
+                        <input class="form-control" type="text" id="galleryTitle" placeholder="e.g. Gold H4 Analysis"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input class="form-control" type="date" id="galleryDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image File</label>
+                        <input class="form-control" style="padding: 0.65rem;" type="file" id="galleryFile"
+                            accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%">Upload to Gallery</button>
+                </form>
+            </div>
+        </div>
+
+        <a href="/home" class="back-link">← Back to Home</a>
+
+        <!-- ====== Courses Management Section ====== -->
+        <div class="courses-section">
+            <div class="courses-header">
+                <h2>🎓 Course Management</h2>
+                <div class="courses-header-actions">
+                    <button class="btn btn-export-courses" onclick="exportCourses()">💾 Export Courses</button>
+                    <button class="btn btn-import-courses" onclick="document.getElementById('importCoursesFile').click()">📂 Import Courses</button>
+                    <input type="file" id="importCoursesFile" accept=".json" style="display:none" onchange="importCourses(event)">
+                    <button class="btn btn-primary" onclick="openNewCourseModal()">＋ New Course</button>
+                </div>
+            </div>
+            <div id="coursesMessage" style="display:none; padding:0.85rem 1.25rem; border-radius:10px; font-size:0.9rem; font-weight:500; margin-bottom:1rem;"></div>
+            <div id="coursesGrid" class="courses-grid">
+                <!-- JS injected -->
+            </div>
         </div>
     </div>
 
-    <!-- Create Modal -->
+    <!-- ====== Create User Modal ====== -->
     <div id="createModal" class="modal">
         <div class="modal-content">
-            <h2>Create New User</h2>
+            <h2>✨ Create New User</h2>
             <form id="createForm">
-                <input type="text" id="createUsername" placeholder="Username" required>
-                <input type="password" id="createPassword" placeholder="Password" required>
-                <div style="margin: 1rem 0; text-align: left;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" id="createHasPaid" style="width: auto;">
-                        <span>Has Paid (Full Access)</span>
-                    </label>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input class="form-control" type="text" id="createUsername" placeholder="Enter username" required>
                 </div>
-                <select id="createRole"
-                    style="width: 100%; padding: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; border-radius: 8px; margin-bottom: 1rem;">
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-                <button type="submit" class="btn-primary">Create Account</button>
-                <button type="button" class="toggle-btn" onclick="closeCreateModal()">Cancel</button>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input class="form-control" type="password" id="createPassword" placeholder="Enter password"
+                        required>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Permanent toggle -->
+                <label class="toggle-row" style="margin-bottom: 1rem;" onclick="togglePermanentCreate()">
+                    <div>
+                        <div class="toggle-label">👑 Permanent (Lifetime)</div>
+                        <div class="toggle-sub">No expiry date — always active</div>
+                    </div>
+                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                        <input type="checkbox" id="createIsPermanent" onchange="togglePermanentCreate()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <div class="form-group" id="createDaysGroup">
+                    <label class="form-label">Subscription Duration (Days)</label>
+                    <input class="form-control" type="number" id="createSubDays" placeholder="e.g. 30" min="0">
+                </div>
+
+                <!-- Has Paid -->
+                <label class="toggle-row" style="margin-bottom: 1rem;">
+                    <div>
+                        <div class="toggle-label">💳 Full Access (Paid)</div>
+                        <div class="toggle-sub">Mark as paid / premium user</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="createHasPaid">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-control" id="createRole">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rank</label>
+                    <select class="form-control" id="createRank">
+                        <option value="Pup">🐺 Pup (New)</option>
+                        <option value="Hunter">🏹 Hunter (Intermediate)</option>
+                        <option value="Alpha Wolf">👑 Alpha Wolf (Pro)</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">Cancel</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- Edit Modal -->
+    <!-- ====== Edit User Modal ====== -->
     <div id="editModal" class="modal">
         <div class="modal-content">
-            <h2>Edit User</h2>
+            <h2>✏️ Edit User</h2>
             <form id="editForm">
                 <input type="hidden" id="editId">
-                <input type="text" id="editUser" placeholder="Username" required>
-                <input type="password" id="editPass" placeholder="New Password (optional)">
-                <input type="text" id="editRole" placeholder="Role (user/admin)" required>
-                <div style="margin: 1rem 0; text-align: left;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="checkbox" id="editHasPaid" style="width: auto;">
-                        <span>Has Paid (Full Access)</span>
-                    </label>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input class="form-control" type="text" id="editUser" placeholder="Username" required>
                 </div>
-                <button type="submit" class="btn-primary">Save Changes</button>
-                <button type="button" class="toggle-btn" onclick="closeModal()">Cancel</button>
+                <div class="form-group">
+                    <label class="form-label">New Password <small style="color:var(--text-muted)">(leave blank to
+                            keep)</small></label>
+                    <input class="form-control" type="password" id="editPass" placeholder="New password (optional)">
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Permanent toggle -->
+                <label class="toggle-row" style="margin-bottom: 1rem;" onclick="togglePermanentEdit()">
+                    <div>
+                        <div class="toggle-label">👑 Permanent (Lifetime)</div>
+                        <div class="toggle-sub">No expiry — bypasses time checks</div>
+                    </div>
+                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                        <input type="checkbox" id="editIsPermanent" onchange="togglePermanentEdit()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <div class="form-group" id="editDaysGroup">
+                    <label class="form-label">Add Subscription Days <small style="color:var(--text-muted)">(adds on top
+                            of existing expiry)</small></label>
+                    <input class="form-control" type="number" id="editSubDays" placeholder="e.g. 30" min="0">
+                </div>
+
+                <!-- Has Paid -->
+                <label class="toggle-row" style="margin-bottom: 1rem;">
+                    <div>
+                        <div class="toggle-label">💳 Full Access (Paid)</div>
+                        <div class="toggle-sub">Toggle premium / paid status</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="editHasPaid">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </label>
+
+                <div class="divider"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-control" id="editRole">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rank</label>
+                    <select class="form-control" id="editRank">
+                        <option value="Pup">🐺 Pup (New)</option>
+                        <option value="Hunter">🏹 Hunter (Intermediate)</option>
+                        <option value="Alpha Wolf">👑 Alpha Wolf (Pro)</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
             </form>
         </div>
     </div>
 
+    <!-- ====== New / Edit Course Modal ====== -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <h2 id="courseModalTitle">🎓 New Course</h2>
+            <input type="hidden" id="courseModalId">
+            <div class="form-group">
+                <label class="form-label">Course Title *</label>
+                <input class="form-control" type="text" id="courseModalTitleInput" placeholder="e.g. SMC Mastery" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" id="courseModalDesc" rows="3" placeholder="Short description…"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveCourseModal()">Save Course</button>
+                <button class="btn btn-secondary" onclick="closeCourseModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== Add / Edit Video Modal ====== -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <h2 id="videoModalTitle">🎬 Add Video</h2>
+            <input type="hidden" id="videoModalCourseId">
+            <input type="hidden" id="videoModalVideoId">
+            <div class="form-group">
+                <label class="form-label">Video Title</label>
+                <input class="form-control" type="text" id="videoModalTitleInput" placeholder="e.g. Lesson 1 – Introduction">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Embed URL *</label>
+                <input class="form-control" type="text" id="videoModalUrl" placeholder="https://www.youtube.com/embed/..." required>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem;">⚠️ Use the full embed URL (e.g. YouTube /embed/ link)</div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="saveVideoModal()">Save Video</button>
+                <button class="btn btn-secondary" onclick="closeVideoModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== KYC Review & Download Modal ====== -->
+    <div id="kycModal" class="modal">
+        <div class="modal-content kyc-modal-content">
+            <h2>🪪 KYC Verification Details</h2>
+            <div id="kycModalLoading" style="text-align:center; padding: 2rem; color:var(--text-muted)">Loading user KYC data...</div>
+            <div id="kycModalBody" style="display:none;">
+                <div class="kyc-info-grid">
+                    <div class="kyc-info-item">
+                        <span class="label">User</span>
+                        <span class="val" id="kycUserDisplay">—</span>
+                    </div>
+                    <div class="kyc-info-item">
+                        <span class="label">Status</span>
+                        <span class="val" id="kycStatusBadgeDisplay">—</span>
+                    </div>
+                    <div class="kyc-info-item">
+                        <span class="label">Full Legal Name (الاسم)</span>
+                        <span class="val" id="kycFullNameDisplay">—</span>
+                    </div>
+                    <div class="kyc-info-item">
+                        <span class="label">Date of Birth & Age (السن بالتاريخ)</span>
+                        <span class="val" id="kycDobAgeDisplay">—</span>
+                    </div>
+                    <div class="kyc-info-item">
+                        <span class="label">Country / Residence (الإقامة)</span>
+                        <span class="val" id="kycCountryDisplay">—</span>
+                    </div>
+                    <div class="kyc-info-item">
+                        <span class="label">Document Type (نوع الهوية)</span>
+                        <span class="val" id="kycDocTypeDisplay">—</span>
+                    </div>
+                    <div class="kyc-info-item">
+                        <span class="label">Submitted At (تاريخ التقديم)</span>
+                        <span class="val" id="kycSubmittedAtDisplay">—</span>
+                    </div>
+                </div>
+
+                <div class="kyc-doc-grid">
+                    <!-- Front Image -->
+                    <div class="kyc-doc-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="font-size:0.85rem;">🪪 Front Side (وش الهوية)</strong>
+                            <a id="kycDownloadFrontBtn" href="#" class="btn btn-sm btn-secondary" download>⬇️ Download</a>
+                        </div>
+                        <img id="kycFrontImg" class="kyc-doc-preview" src="" alt="Front ID" onclick="window.open(this.src, '_blank')">
+                    </div>
+
+                    <!-- Back Image -->
+                    <div class="kyc-doc-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="font-size:0.85rem;">🔄 Back Side (ظهر الهوية)</strong>
+                            <a id="kycDownloadBackBtn" href="#" class="btn btn-sm btn-secondary" download>⬇️ Download</a>
+                        </div>
+                        <img id="kycBackImg" class="kyc-doc-preview" src="" alt="Back ID" onclick="window.open(this.src, '_blank')">
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <button type="button" class="btn btn-primary" id="kycVerifyBtn" style="flex:1; background:linear-gradient(135deg, #10b981, #059669);" onclick="adminSetKycStatus('verified')">
+                        ✅ Mark as Verified (توثيق الحساب)
+                    </button>
+                    <button type="button" class="btn btn-delete" id="kycUnverifyBtn" style="flex:1;" onclick="adminSetKycStatus('unverified')">
+                        ❌ Mark as Unverified (إلغاء التوثيق)
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top:1.25rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeKycModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
     <script src="/static/script.js"></script>
     <script>
-        // Auto-load users on admin page
-        document.addEventListener('DOMContentLoaded', loadUsers);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUsers();
+            document.getElementById('galleryDate').valueAsDate = new Date();
+            loadCourses();
+        });
+
+        function togglePermanentCreate() {
+            const perm = document.getElementById('createIsPermanent').checked;
+            document.getElementById('createDaysGroup').style.opacity = perm ? '0.4' : '1';
+            document.getElementById('createSubDays').disabled = perm;
+        }
+
+        function togglePermanentEdit() {
+            const perm = document.getElementById('editIsPermanent').checked;
+            document.getElementById('editDaysGroup').style.opacity = perm ? '0.4' : '1';
+            document.getElementById('editSubDays').disabled = perm;
+        }
+
+        async function updateLiveSettings(e) {
+            e.preventDefault();
+            const url = document.getElementById('liveUrl').value;
+            const next_session = document.getElementById('liveNextSession').value;
+            const is_live = document.getElementById('liveIsLive').checked;
+            try {
+                const res = await fetch('/api/admin/live', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url, next_session, is_live })
+                });
+                const data = await res.json();
+                showAdminMessage(data.success ? 'Live settings updated!' : 'Failed to update.', data.success ? 'success' : 'error');
+            } catch (err) {
+                showAdminMessage('Error: ' + err, 'error');
+            }
+        }
+
+        async function uploadGalleryImage(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerText = 'Uploading…';
+            const title = document.getElementById('galleryTitle').value;
+            const date = document.getElementById('galleryDate').value;
+            const file = document.getElementById('galleryFile').files[0];
+            if (!file) { btn.disabled = false; btn.innerText = 'Upload to Gallery'; return; }
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('title', title);
+            formData.append('date', date);
+            try {
+                const res = await fetch('/api/admin/gallery', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.success) {
+                    showAdminMessage('Gallery image uploaded!', 'success');
+                    e.target.reset();
+                    document.getElementById('galleryDate').valueAsDate = new Date();
+                } else {
+                    showAdminMessage(data.message || 'Upload failed.', 'error');
+                }
+            } catch (err) {
+                showAdminMessage('Error: ' + err, 'error');
+            } finally {
+                btn.disabled = false; btn.innerText = 'Upload to Gallery';
+            }
+        }
+
+        function showAdminMessage(msg, type) {
+            const el = document.getElementById('adminMessage');
+            el.textContent = msg;
+            el.className = type;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 4000);
+        }
+
+        // ========== NATIVE BROADCAST (ADMIN) ==========
+        let localStream;
+        let socket;
+        let peerConnections = {}; // socket.id -> RTCPeerConnection
+        let viewerCount = 0;
+
+        const config = {
+            'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]
+        };
+
+        async function startNativeBroadcast(type) {
+            try {
+                if (type === 'camera') {
+                    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                } else {
+                    localStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+                }
+
+                document.getElementById('localVideo').srcObject = localStream;
+                document.getElementById('localVideo').style.display = 'block';
+                document.getElementById('startCamBtn').style.display = 'none';
+                document.getElementById('startScreenBtn').style.display = 'none';
+                document.getElementById('stopBroadcastBtn').style.display = 'block';
+                document.getElementById('viewerCount').style.display = 'block';
+
+                // Connect to Socket.IO signaling server
+                socket = io();
+
+                socket.on('connect', () => {
+                    socket.emit('join_broadcast', { role: 'admin' });
+                });
+
+                socket.on('viewer_joined', async (data) => {
+                    viewerCount++;
+                    document.getElementById('viewerCount').innerText = `👁️ Viewers: ${viewerCount}`;
+                    
+                    const viewerId = data.id;
+                    const pc = new RTCPeerConnection(config);
+                    peerConnections[viewerId] = pc;
+
+                    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+                    pc.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            socket.emit('ice_candidate', { target: viewerId, candidate: event.candidate });
+                        }
+                    };
+
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
+                    socket.emit('offer', { target: viewerId, offer: pc.localDescription });
+                });
+
+                socket.on('answer', async (data) => {
+                    const pc = peerConnections[data.sender];
+                    if (pc) {
+                        await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+                    }
+                });
+
+                socket.on('ice_candidate', async (data) => {
+                    const pc = peerConnections[data.sender];
+                    if (pc && data.candidate) {
+                        await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                    }
+                });
+
+                socket.on('viewer_left', (data) => {
+                    if (peerConnections[data.id]) {
+                        peerConnections[data.id].close();
+                        delete peerConnections[data.id];
+                        viewerCount = Math.max(0, viewerCount - 1);
+                        document.getElementById('viewerCount').innerText = `👁️ Viewers: ${viewerCount}`;
+                    }
+                });
+
+            } catch (err) {
+                alert('Error accessing media devices: ' + err);
+            }
+        }
+
+        function stopNativeBroadcast() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            if (socket) {
+                socket.disconnect();
+            }
+            for (let id in peerConnections) {
+                peerConnections[id].close();
+            }
+            peerConnections = {};
+            viewerCount = 0;
+            
+            document.getElementById('localVideo').style.display = 'none';
+            document.getElementById('startCamBtn').style.display = 'block';
+            document.getElementById('startScreenBtn').style.display = 'block';
+            document.getElementById('stopBroadcastBtn').style.display = 'none';
+            document.getElementById('viewerCount').style.display = 'none';
+            document.getElementById('viewerCount').innerText = `👁️ Viewers: 0`;
+        }
+
+        // ========== COURSES MANAGEMENT ==========
+
+        let coursesData = [];
+
+        async function loadCourses() {
+            try {
+                const res = await fetch('/api/admin/courses');
+                const data = await res.json();
+                if (data.success) {
+                    coursesData = data.courses || [];
+                    renderCourses();
+                }
+            } catch (err) {
+                showCoursesMessage('Failed to load courses: ' + err, 'error');
+            }
+        }
+
+        function renderCourses() {
+            const grid = document.getElementById('coursesGrid');
+            if (!coursesData.length) {
+                grid.innerHTML = `
+                    <div class="empty-courses" style="grid-column:1/-1;">
+                        <div class="icon">🎓</div>
+                        <div style="font-weight:700; font-size:1rem; margin-bottom:0.4rem;">No courses yet</div>
+                        <div style="font-size:0.85rem;">Click "+ New Course" to create your first course.</div>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = coursesData.map((course, ci) => `
+                <div class="course-card" id="course-card-${course.id}">
+                    <div class="course-card-header">
+                        <div>
+                            <div class="course-title">📘 ${escHtml(course.title)}</div>
+                            ${course.description ? `<div class="course-desc">${escHtml(course.description)}</div>` : ''}
+                        </div>
+                        <div class="course-card-actions">
+                            <button class="btn btn-sm btn-edit" onclick="openEditCourseModal(${course.id})" title="Edit">✏️</button>
+                            <button class="btn btn-sm btn-delete" onclick="deleteCourse(${course.id})" title="Delete">🗑️</button>
+                        </div>
+                    </div>
+
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.4rem;">
+                        <span style="background:var(--primary-dim); color:#d8b4fe; padding:0.2rem 0.55rem; border-radius:6px; font-weight:700;">${(course.videos || []).length} videos</span>
+                        <span>Created ${course.created_at || ''}</span>
+                    </div>
+
+                    <div class="video-list" id="video-list-${course.id}">
+                        ${(course.videos || []).map((v, vi) => renderVideoItem(course.id, v, vi + 1)).join('')}
+                    </div>
+
+                    <button class="btn btn-secondary" style="width:100%; margin-top:0.25rem; font-size:0.82rem;"
+                        onclick="openAddVideoModal(${course.id})">
+                        ＋ Add Video
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderVideoItem(courseId, video, num) {
+            return `
+                <div class="video-item" id="video-item-${video.id}">
+                    <span class="video-num">#${num}</span>
+                    <div class="video-info">
+                        <div class="video-name">${escHtml(video.title || 'Untitled')}</div>
+                        <div class="video-url-preview">${escHtml(video.embed_url)}</div>
+                    </div>
+                    <div class="video-actions">
+                        <button class="btn btn-sm btn-edit" onclick="openEditVideoModal(${courseId}, ${video.id}, '${escAttr(video.title)}', '${escAttr(video.embed_url)}')" title="Edit">✏️</button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteVideo(${courseId}, ${video.id})" title="Delete">🗑️</button>
+                    </div>
+                </div>`;
+        }
+
+        function escHtml(str) {
+            return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+        function escAttr(str) {
+            return String(str || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        }
+
+        /* ─── Course Modal ─── */
+        function openNewCourseModal() {
+            document.getElementById('courseModalTitle').textContent = '🎓 New Course';
+            document.getElementById('courseModalId').value = '';
+            document.getElementById('courseModalTitleInput').value = '';
+            document.getElementById('courseModalDesc').value = '';
+            document.getElementById('courseModal').classList.add('visible');
+        }
+
+        function openEditCourseModal(courseId) {
+            const course = coursesData.find(c => c.id === courseId);
+            if (!course) return;
+            document.getElementById('courseModalTitle').textContent = '✏️ Edit Course';
+            document.getElementById('courseModalId').value = courseId;
+            document.getElementById('courseModalTitleInput').value = course.title;
+            document.getElementById('courseModalDesc').value = course.description || '';
+            document.getElementById('courseModal').classList.add('visible');
+        }
+
+        function closeCourseModal() {
+            document.getElementById('courseModal').classList.remove('visible');
+        }
+
+        async function saveCourseModal() {
+            const id = document.getElementById('courseModalId').value;
+            const title = document.getElementById('courseModalTitleInput').value.trim();
+            const description = document.getElementById('courseModalDesc').value.trim();
+            if (!title) { showCoursesMessage('Course title is required.', 'error'); return; }
+
+            try {
+                let res;
+                if (id) {
+                    res = await fetch(`/api/admin/courses/${id}`, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({title, description})
+                    });
+                } else {
+                    res = await fetch('/api/admin/courses', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({title, description})
+                    });
+                }
+                const data = await res.json();
+                if (data.success) {
+                    showCoursesMessage(id ? 'Course updated!' : 'Course created!', 'success');
+                    closeCourseModal();
+                    await loadCourses();
+                } else {
+                    showCoursesMessage(data.message || 'Error saving course.', 'error');
+                }
+            } catch (err) {
+                showCoursesMessage('Error: ' + err, 'error');
+            }
+        }
+
+        async function deleteCourse(courseId) {
+            const course = coursesData.find(c => c.id === courseId);
+            if (!course) return;
+            if (!confirm(`Delete course "${course.title}" and all its videos? This cannot be undone.`)) return;
+            try {
+                const res = await fetch(`/api/admin/courses/${courseId}`, {method: 'DELETE'});
+                const data = await res.json();
+                if (data.success) {
+                    showCoursesMessage('Course deleted.', 'success');
+                    await loadCourses();
+                } else {
+                    showCoursesMessage(data.message || 'Error deleting.', 'error');
+                }
+            } catch (err) {
+                showCoursesMessage('Error: ' + err, 'error');
+            }
+        }
+
+        /* ─── Video Modal ─── */
+        function openAddVideoModal(courseId) {
+            document.getElementById('videoModalTitle').textContent = '🎬 Add Video';
+            document.getElementById('videoModalCourseId').value = courseId;
+            document.getElementById('videoModalVideoId').value = '';
+            document.getElementById('videoModalTitleInput').value = '';
+            document.getElementById('videoModalUrl').value = '';
+            document.getElementById('videoModal').classList.add('visible');
+        }
+
+        function openEditVideoModal(courseId, videoId, title, url) {
+            document.getElementById('videoModalTitle').textContent = '✏️ Edit Video';
+            document.getElementById('videoModalCourseId').value = courseId;
+            document.getElementById('videoModalVideoId').value = videoId;
+            document.getElementById('videoModalTitleInput').value = title;
+            document.getElementById('videoModalUrl').value = url;
+            document.getElementById('videoModal').classList.add('visible');
+        }
+
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.remove('visible');
+        }
+
+        async function saveVideoModal() {
+            const courseId = document.getElementById('videoModalCourseId').value;
+            const videoId = document.getElementById('videoModalVideoId').value;
+            const title = document.getElementById('videoModalTitleInput').value.trim();
+            const embed_url = document.getElementById('videoModalUrl').value.trim();
+            if (!embed_url) { showCoursesMessage('Embed URL is required.', 'error'); return; }
+
+            try {
+                let res;
+                if (videoId) {
+                    res = await fetch(`/api/admin/courses/${courseId}/videos/${videoId}`, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({title, embed_url})
+                    });
+                } else {
+                    res = await fetch(`/api/admin/courses/${courseId}/videos`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({title, embed_url})
+                    });
+                }
+                const data = await res.json();
+                if (data.success) {
+                    showCoursesMessage(videoId ? 'Video updated!' : 'Video added!', 'success');
+                    closeVideoModal();
+                    await loadCourses();
+                } else {
+                    showCoursesMessage(data.message || 'Error saving video.', 'error');
+                }
+            } catch (err) {
+                showCoursesMessage('Error: ' + err, 'error');
+            }
+        }
+
+        async function deleteVideo(courseId, videoId) {
+            if (!confirm('Delete this video? This cannot be undone.')) return;
+            try {
+                const res = await fetch(`/api/admin/courses/${courseId}/videos/${videoId}`, {method: 'DELETE'});
+                const data = await res.json();
+                if (data.success) {
+                    showCoursesMessage('Video deleted.', 'success');
+                    await loadCourses();
+                } else {
+                    showCoursesMessage(data.message || 'Error.', 'error');
+                }
+            } catch (err) {
+                showCoursesMessage('Error: ' + err, 'error');
+            }
+        }
+
+        /* ─── Export / Import ─── */
+        function exportCourses() {
+            window.location.href = '/api/admin/courses/export';
+        }
+
+        async function importCourses(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            event.target.value = '';
+            try {
+                const text = await file.text();
+                let parsed;
+                try {
+                    parsed = JSON.parse(text);
+                } catch (e) {
+                    showCoursesMessage('Invalid JSON file.', 'error');
+                    return;
+                }
+                // Support both array format [course,...] and object format {courses:[...]}
+                const courses = Array.isArray(parsed) ? parsed : (parsed.courses || []);
+                if (!courses.length) {
+                    showCoursesMessage('No courses found in the file.', 'error');
+                    return;
+                }
+                const res = await fetch('/api/admin/courses/import', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({courses})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showCoursesMessage(data.message, 'success');
+                    await loadCourses();
+                } else {
+                    showCoursesMessage(data.message || 'Import failed.', 'error');
+                }
+            } catch (err) {
+                showCoursesMessage('Error: ' + err, 'error');
+            }
+        }
+
+        function showCoursesMessage(msg, type) {
+            const el = document.getElementById('coursesMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.style.background = type === 'success' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)';
+            el.style.border = type === 'success' ? '1px solid rgba(16,185,129,0.3)' : '1px solid rgba(239,68,68,0.3)';
+            el.style.color = type === 'success' ? '#6ee7b7' : '#fca5a5';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        // Close modals on backdrop click
+        document.getElementById('courseModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCourseModal();
+        });
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) closeVideoModal();
+        });
+
+        // ─── Maintenance Mode ───
+        async function loadMaintenanceStatus() {
+            try {
+                const res = await fetch('/api/maintenance');
+                const data = await res.json();
+                updateMaintenanceBtn(data.enabled);
+            } catch(e) {
+                // silent fail
+            }
+        }
+
+        function updateMaintenanceBtn(enabled) {
+            const btn = document.getElementById('maintenanceBtn');
+            const txt = document.getElementById('maintenanceBtnText');
+            if (!btn) return;
+            if (enabled) {
+                btn.className = 'btn btn-maintenance-on';
+                txt.innerHTML = '<span class="maintenance-dot"></span> تشغيل الموقع';
+                btn.title = 'الموقع في وضع الصيانة - انقر لتشغيله';
+            } else {
+                btn.className = 'btn btn-maintenance-off';
+                txt.textContent = '\u2699\ufe0f وضع الصيانة';
+                btn.title = 'انقر لتفعيل وضع الصيانة';
+            }
+        }
+
+        async function toggleMaintenance() {
+            const btn = document.getElementById('maintenanceBtn');
+            btn.disabled = true;
+            btn.style.opacity = '0.6';
+            try {
+                const res = await fetch('/api/maintenance/toggle', { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    updateMaintenanceBtn(data.enabled);
+                    showMsg(data.message, 'success');
+                } else {
+                    showMsg('حدث خطأ أثناء تغيير حالة الصيانة', 'error');
+                }
+            } catch(e) {
+                showMsg('تعذر الاتصال بالخادم', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        }
+
+        // Load maintenance status on page load
+        loadMaintenanceStatus();
     </script>
 </body>
 

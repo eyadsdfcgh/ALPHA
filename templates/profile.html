@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile & Referrals | ALPHA Trading</title>
+    <meta name="description" content="ALPHA Trading – Your profile, referral link, and commission dashboard.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="/static/protection.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --success: #10b981;
+            --amber: #f59e0b;
+            --bg: #080d1a;
+            --card: rgba(255, 255, 255, 0.04);
+            --card-hover: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #e2e8f0;
+            --text-dim: rgba(255, 255, 255, 0.45);
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99, 102, 241, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: rgba(8, 13, 26, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .nav-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text);
+            background: var(--card);
+        }
+
+        .page-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .page-header h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.3rem;
+        }
+
+        .page-header p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .profile-info h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.3rem;
+        }
+
+        .profile-info p {
+            color: var(--text-dim);
+            font-size: 0.875rem;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .badge-admin {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-user {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .access-badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            margin-left: 0.5rem;
+        }
+
+        /* Referral Section */
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .referral-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.08));
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .referral-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+        }
+
+        .referral-link-row {
+            display: flex;
+            gap: 0.75rem;
+            margin: 1.25rem 0;
+        }
+
+        .referral-link-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            padding: 0.7rem 1rem;
+        }
+
+        .referral-link-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 0.7rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .share-btns {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text-dim);
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+        }
+
+        .share-btn:hover {
+            background: var(--card-hover);
+            color: var(--text);
+            border-color: var(--primary);
+        }
+
+        /* Commission Stats */
+        .commission-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .comm-stat {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .comm-stat:hover {
+            background: var(--card-hover);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .comm-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .comm-value {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 0.3rem;
+        }
+
+        .comm-label {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+        }
+
+        /* Referral Table */
+        .referral-table-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .referral-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .referral-table th {
+            padding: 0.85rem 1rem;
+            text-align: left;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-dim);
+            background: rgba(99, 102, 241, 0.06);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .referral-table td {
+            padding: 0.8rem 1rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .referral-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ref-user-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .ref-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        .paid-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 100px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .paid-y {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .paid-n {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        /* How it Works */
+        .how-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .how-step {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .step-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin: 0 auto 0.75rem;
+        }
+
+        .step-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.35rem;
+        }
+
+        .step-desc {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 900;
+            background: #1e293b;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem 1.25rem;
+            font-size: 0.875rem;
+            color: var(--text);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-color: rgba(16, 185, 129, 0.4);
+            color: #34d399;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeUp 0.5s ease-out both;
+        }
+
+        .fade-up-1 {
+            animation-delay: 0.05s;
+        }
+
+        .fade-up-2 {
+            animation-delay: 0.1s;
+        }
+
+        .fade-up-3 {
+            animation-delay: 0.15s;
+        }
+
+        @media (max-width:768px) {
+            .profile-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .commission-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .how-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .referral-link-row {
+                flex-direction: column;
+            }
+
+            .page-wrap {
+                padding: 1.25rem 0.85rem 3rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .commission-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Mobile Hamburger & Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.3rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .mobile-nav-drawer {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 13, 26, 0.98);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 199;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .mobile-nav-drawer.open {
+            display: flex;
+        }
+
+        .mobile-nav-drawer .nav-link {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+            <button class="mobile-menu-btn" onclick="document.getElementById('profMobNav').classList.toggle('open')" aria-label="Toggle navigation">☰</button>
+            <span class="nav-logo">⚡ ALPHA</span>
+        </div>
+        <div class="nav-links">
+            <a href="/home" class="nav-link">Dashboard</a>
+            <a href="/course" class="nav-link">📚 Course</a>
+            <a href="/journal" class="nav-link">📓 Journal</a>
+            <a href="/profile" class="nav-link active">👤 Profile</a>
+            <a href="/live" class="nav-link">📻 Live</a>
+            <a href="/gallery" class="nav-link">🖼️ Gallery</a>
+            <a href="/logout" class="nav-link" style="color:rgba(239,68,68,0.7)">Logout</a>
+        </div>
+    </nav>
+
+    <div class="mobile-nav-drawer" id="profMobNav">
+        <a href="/home" class="nav-link">🏠 Dashboard</a>
+        <a href="/course" class="nav-link">📚 SMC Course</a>
+        <a href="/journal" class="nav-link">📓 Trading Journal</a>
+        <a href="/profile" class="nav-link active">👤 Profile & Referrals</a>
+        <a href="/live" class="nav-link">📻 Live Room</a>
+        <a href="/gallery" class="nav-link">🖼️ Alpha Gallery</a>
+        <a href="/logout" class="nav-link" style="color: rgba(239,68,68,0.9);">🚪 Logout</a>
+    </div>
+
+    <div class="page-wrap">
+        <!-- PROFILE CARD -->
+        <div class="profile-card fade-up">
+            <div class="profile-avatar">{{ user.username[0]|upper }}</div>
+            <div class="profile-info">
+                <h2 style="display:flex;align-items:center;gap:0.5rem">{{ user.username }} <span
+                        style="font-size:0.75rem;background:rgba(160,32,240,0.2);color:#d8b4fe;padding:0.2rem 0.5rem;border-radius:4px;font-weight:600;vertical-align:middle;text-shadow:none;">{{
+                        user.rank }}</span></h2>
+                <p>Member of ALPHA Trading Platform</p>
+                <div>
+                    <span class="role-badge {{ 'badge-admin' if user.role == 'admin' else 'badge-user' }}">
+                        {{ '⚡ Admin' if user.role == 'admin' else '👤 Student' }}
+                    </span>
+                    {% if user.has_paid %}
+                    <span class="role-badge access-badge">✅ Full Access</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- REFERRAL LINK CARD -->
+        <div class="section fade-up fade-up-1">
+            <div class="section-title">🔗 Your Referral Link</div>
+            <div class="referral-card">
+                <p style="font-size:0.875rem;color:rgba(255,255,255,0.65);line-height:1.6;">
+                    Share your unique referral link with friends. Every time someone signs up and pays for the course
+                    through your link, you earn a <strong style="color:white;">$10 commission</strong>. There's no
+                    limit!
+                </p>
+                <div class="referral-link-row">
+                    <input type="text" class="referral-link-input" id="refLinkInput" value="Loading..." readonly>
+                    <button class="copy-btn" onclick="copyLink()">📋 Copy Link</button>
+                </div>
+                <div class="share-btns">
+                    <button class="share-btn" onclick="shareWhatsApp()">📱 WhatsApp</button>
+                    <button class="share-btn" onclick="shareTelegram()">✈️ Telegram</button>
+                    <button class="share-btn" onclick="shareTwitter()">🐦 Twitter/X</button>
+                    <button class="share-btn" onclick="copyLink()">🔗 Copy URL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMMISSION STATS -->
+        <div class="section fade-up fade-up-2">
+            <div class="section-title">💰 Commission Dashboard</div>
+            <div class="commission-grid">
+                <div class="comm-stat">
+                    <div class="comm-icon">👥</div>
+                    <div class="comm-value" id="totalRefs">—</div>
+                    <div class="comm-label">Total Referrals</div>
+                </div>
+                <div class="comm-stat">
+                    <div class="comm-icon">✅</div>
+                    <div class="comm-value" id="paidRefs">—</div>
+                    <div class="comm-label">Paid Referrals</div>
+                </div>
+                <div class="comm-stat">
+                    <div class="comm-icon">💵</div>
+                    <div class="comm-value" id="totalComm">—</div>
+                    <div class="comm-label">Total Commission Earned</div>
+                </div>
+            </div>
+            <p style="font-size:0.78rem;color:var(--text-dim);margin-top:1rem;">💡 Commission = $10 per paid referral.
+                Contact admin to arrange payment.</p>
+        </div>
+
+        <!-- REFERRAL TABLE -->
+        <div class="section fade-up fade-up-2" id="refTableSection" style="display:none;">
+            <div class="section-title">📋 Referred Users</div>
+            <div class="referral-table-wrap">
+                <table class="referral-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Payment Status</th>
+                            <th>Commission</th>
+                        </tr>
+                    </thead>
+                    <tbody id="refTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- HOW IT WORKS -->
+        <div class="section fade-up fade-up-3">
+            <div class="section-title">❓ How the Referral Program Works</div>
+            <div class="how-grid">
+                <div class="how-step">
+                    <div class="step-num">1</div>
+                    <div class="step-title">Share Your Link</div>
+                    <div class="step-desc">Copy your unique referral URL and share it with friends on WhatsApp,
+                        Telegram, or social media.</div>
+                </div>
+                <div class="how-step">
+                    <div class="step-num">2</div>
+                    <div class="step-title">Friend Signs Up</div>
+                    <div class="step-desc">When they click your link and register, they're automatically linked to your
+                        referral account.</div>
+                </div>
+                <div class="how-step">
+                    <div class="step-num">3</div>
+                    <div class="step-title">Earn $10 Commission</div>
+                    <div class="step-desc">Once they purchase the ALPHA course for $50, you earn a $10 commission — up
+                        to $10 per referred student, no cap!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let referralLink = '';
+
+        function loadReferral() {
+            fetch('/api/referral')
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.success) return;
+                    referralLink = data.referral_link;
+                    document.getElementById('refLinkInput').value = referralLink;
+                    document.getElementById('totalRefs').textContent = data.total_referrals;
+                    document.getElementById('paidRefs').textContent = data.paid_referrals;
+                    document.getElementById('totalComm').textContent = '$' + data.total_commission;
+
+                    if (data.referral_users && data.referral_users.length > 0) {
+                        document.getElementById('refTableSection').style.display = 'block';
+                        const tbody = document.getElementById('refTableBody');
+                        tbody.innerHTML = data.referral_users.map(u => `
+                    <tr>
+                        <td>
+                            <div class="ref-user-chip">
+                                <div class="ref-avatar">${u.username[0].toUpperCase()}</div>
+                                <span>${escHtml(u.username)}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="paid-badge ${u.has_paid ? 'paid-y' : 'paid-n'}">
+                                ${u.has_paid ? '✅ Paid' : '⏳ Pending'}
+                            </span>
+                        </td>
+                        <td style="font-weight:700;color:${u.has_paid ? '#34d399' : 'var(--text-dim)'}">
+                            ${u.has_paid ? '$10' : '$0'}
+                        </td>
+                    </tr>
+                `).join('');
+                    }
+                });
+        }
+
+        function copyLink() {
+            if (!referralLink) return;
+            navigator.clipboard.writeText(referralLink).then(() => showToast('🔗 Referral link copied!', 'success'));
+            document.getElementById('refLinkInput').select();
+        }
+
+        function shareWhatsApp() {
+            const msg = encodeURIComponent(`🚀 Join ALPHA Trading Platform and learn SMC! Use my referral link: ${referralLink}`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
+
+        function shareTelegram() {
+            const msg = encodeURIComponent(`🚀 Join ALPHA Trading Platform! Learn SMC with 54 professional lessons: ${referralLink}`);
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${msg}`, '_blank');
+        }
+
+        function shareTwitter() {
+            const msg = encodeURIComponent(`📈 Learning SMC trading with ALPHA – the most comprehensive course out there! Join me: ${referralLink} #Trading #SMC #Forex #Gold`);
+            window.open(`https://twitter.com/intent/tweet?text=${msg}`, '_blank');
+        }
+
+        function escHtml(text) {
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadReferral);
+    </script>
+</body>
+
+</html>

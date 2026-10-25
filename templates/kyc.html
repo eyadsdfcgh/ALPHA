@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA | توثيق الهوية (KYC Verification)</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/protection.js"></script>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --accent-purple: #a855f7;
+            --accent-indigo: #6366f1;
+            --dark-bg: #0b0f19;
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --border-focus: rgba(168, 85, 247, 0.5);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-main);
+            box-sizing: border-box;
+        }
+
+        .kyc-container {
+            width: 100%;
+            max-width: 680px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.15);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .kyc-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .kyc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(168, 85, 247, 0.15);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #d8b4fe;
+            padding: 0.4rem 1.1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .kyc-title {
+            font-size: 2rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.6rem;
+        }
+
+        .kyc-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Status Alert */
+        .status-alert {
+            padding: 1rem 1.25rem;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            margin-bottom: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-alert.warning {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: #fbbf24;
+        }
+
+        .status-alert.error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #f87171;
+        }
+
+        .status-alert.info {
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            color: #a5b4fc;
+        }
+
+        /* Form styling */
+        .kyc-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-label small {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-select option {
+            background: #0f172a;
+            color: #fff;
+        }
+
+        /* Document Type Selector Cards */
+        .doc-type-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.85rem;
+        }
+
+        .doc-type-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.1rem 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .doc-type-card:hover {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .doc-type-card.active {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.2);
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .doc-type-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .doc-type-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* Two columns row */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .age-badge {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        /* Upload boxes */
+        .upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .upload-box {
+            position: relative;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .upload-box:hover {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.05);
+        }
+
+        .upload-box.has-file {
+            border-style: solid;
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.2rem;
+        }
+
+        .upload-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .upload-preview {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            border-radius: 14px;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: #fff;
+            border-radius: 14px;
+        }
+
+        .upload-box:hover .preview-overlay {
+            display: flex;
+        }
+
+        .file-input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Submit Button */
+        .btn-submit-kyc {
+            width: 100%;
+            padding: 1.1rem;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-submit-kyc:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.6);
+        }
+
+        .btn-submit-kyc:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Footer links */
+        .kyc-footer {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 1.25rem;
+        }
+
+        .kyc-footer a {
+            color: #d8b4fe;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .kyc-footer a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        #messageBoxKyc {
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-align: center;
+            display: none;
+        }
+
+        #messageBoxKyc.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #34d399;
+        }
+
+        #messageBoxKyc.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #f87171;
+        }
+
+        @media (max-width: 640px) {
+            .kyc-container {
+                padding: 1.75rem 1.25rem;
+            }
+            .doc-type-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row, .upload-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="kyc-container">
+        <div class="kyc-header">
+            <div class="kyc-badge">🔒 تأكيد الهوية والأمان</div>
+            <h1 class="kyc-title">توثيق الحساب (KYC)</h1>
+            <p class="kyc-subtitle">
+                مرحباً <strong>{{ user.username }}</strong>، يشترط إرفاق مستندات الهوية لتأكيد حسابك ودخول المنصة.
+            </p>
+        </div>
+
+        {% if kyc_status == 'unverified' or kyc_status == 'rejected' %}
+        <div class="status-alert error">
+            <span>⚠️</span>
+            <div>حسابك غير موثق حالياً من قبل الإدارة. يرجى مراجعة بياناتك وإعادة إرفاق المستندات المطلوبة بدقة لتأكيد التوثيق.</div>
+        </div>
+        {% elif kyc_status == 'pending' %}
+        <div class="status-alert warning">
+            <span>⏳</span>
+            <div>بياناتك قيد المراجعة لدى إدارة المنصة. يمكنك تحديث المستندات إذا طُلب منك ذلك.</div>
+        </div>
+        {% else %}
+        <div class="status-alert info">
+            <span>ℹ️</span>
+            <div>يرجى إدخال اسمك الحقيقي، تاريخ الميلاد، ومكان إقامتك مع إرفاق صور واضحة للهوية (وجه وظهر).</div>
+        </div>
+        {% endif %}
+
+        <div id="messageBoxKyc"></div>
+
+        <form class="kyc-form" id="kycForm" onsubmit="submitKycForm(event)">
+            <!-- 1. Document Type -->
+            <div class="form-group">
+                <label class="form-label">
+                    <span>1. نوع الوثيقة الرسمية</span>
+                    <small>اختر نوع الهوية المتوفرة لديك</small>
+                </label>
+                <div class="doc-type-grid">
+                    <div class="doc-type-card active" data-type="national_id" onclick="selectDocType('national_id')">
+                        <div class="doc-type-icon">🪪</div>
+                        <div class="doc-type-title">بطاقة هوية وطنية</div>
+                    </div>
+                    <div class="doc-type-card" data-type="passport" onclick="selectDocType('passport')">
+                        <div class="doc-type-icon">🛂</div>
+                        <div class="doc-type-title">جواز سفر</div>
+                    </div>
+                    <div class="doc-type-card" data-type="driver_license" onclick="selectDocType('driver_license')">
+                        <div class="doc-type-icon">🚗</div>
+                        <div class="doc-type-title">رخصة قيادة</div>
+                    </div>
+                </div>
+                <input type="hidden" id="docTypeInput" name="doc_type" value="national_id">
+            </div>
+
+            <!-- 2. Full Name -->
+            <div class="form-group">
+                <label class="form-label">
+                    <span>2. الاسم الكامل</span>
+                    <small>كما هو مدون بالهوية الرسمية</small>
+                </label>
+                <input type="text" id="fullNameInput" name="full_name" class="form-input" 
+                    placeholder="مثال: أحمد محمد علي" value="{{ kyc_data.full_name if kyc_data else '' }}" required>
+            </div>
+
+            <!-- 3. DOB & Country -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">
+                        <span>3. تاريخ الميلاد</span>
+                        <span id="calculatedAgeBadge" class="age-badge" style="display:none;"></span>
+                    </label>
+                    <input type="date" id="dobInput" name="dob" class="form-input" 
+                        value="{{ kyc_data.dob if kyc_data else '' }}" onchange="calculateAge()" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <span>4. مكان / بلد الإقامة</span>
+                    </label>
+                    <input type="text" id="countryInput" name="country" class="form-input" 
+                        placeholder="مثال: مصر / السعودية / الإمارات" value="{{ kyc_data.country if kyc_data else '' }}" required>
+                </div>
+            </div>
+
+            <!-- 4. Upload Front & Back ID -->
+            <div class="form-group">
+                <label class="form-label">
+                    <span>5. رفع صور الهوية الرسمية (وجه وظهر)</span>
+                    <small>يجب أن تكون الصور واضحة ومقروءة</small>
+                </label>
+                <div class="upload-grid">
+                    <!-- Front Image Box -->
+                    <div class="upload-box" id="frontBox">
+                        <input type="file" id="frontImageInput" name="front_image" class="file-input" accept="image/*" onchange="handleFileSelect(event, 'front')" required>
+                        <img id="frontPreview" class="upload-preview" alt="Front Preview">
+                        <div class="preview-overlay" id="frontOverlay">
+                            <span>🔄 انقر لتغيير الصورة</span>
+                        </div>
+                        <div class="upload-placeholder" id="frontPlaceholder">
+                            <div class="upload-icon">📷</div>
+                            <div class="upload-title">الوجه الأمامي للهوية</div>
+                            <div class="upload-desc">انقر هنا أو اسحب الصورة (Front)</div>
+                        </div>
+                    </div>
+
+                    <!-- Back Image Box -->
+                    <div class="upload-box" id="backBox">
+                        <input type="file" id="backImageInput" name="back_image" class="file-input" accept="image/*" onchange="handleFileSelect(event, 'back')" required>
+                        <img id="backPreview" class="upload-preview" alt="Back Preview">
+                        <div class="preview-overlay" id="backOverlay">
+                            <span>🔄 انقر لتغيير الصورة</span>
+                        </div>
+                        <div class="upload-placeholder" id="backPlaceholder">
+                            <div class="upload-icon">📷</div>
+                            <div class="upload-title" id="backTitle">الوجه الخلفي للهوية</div>
+                            <div class="upload-desc" id="backDesc">انقر هنا أو اسحب الصورة (Back)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit-kyc">
+                <span>🚀 إرسال مستندات الهوية وتفعيل الحساب</span>
+            </button>
+        </form>
+
+        <div class="kyc-footer">
+            <span>مسجل كـ: <strong>{{ user.username }}</strong></span>
+            <a href="/logout">تسجيل الخروج ←</a>
+        </div>
+    </div>
+
+    <script>
+        function selectDocType(type) {
+            document.querySelectorAll('.doc-type-card').forEach(c => c.classList.remove('active'));
+            const activeCard = document.querySelector(`.doc-type-card[data-type="${type}"]`);
+            if (activeCard) activeCard.classList.add('active');
+            document.getElementById('docTypeInput').value = type;
+
+            const backBox = document.getElementById('backBox');
+            const backInput = document.getElementById('backImageInput');
+            const backTitle = document.getElementById('backTitle');
+            const backDesc = document.getElementById('backDesc');
+
+            if (type === 'passport') {
+                backTitle.textContent = 'صفحة التأشيرة / اختياري';
+                backDesc.textContent = 'اختياري للجواز (Optional)';
+                backInput.removeAttribute('required');
+            } else {
+                backTitle.textContent = 'الوجه الخلفي للهوية';
+                backDesc.textContent = 'انقر هنا أو اسحب الصورة (Back)';
+                backInput.setAttribute('required', 'required');
+            }
+        }
+
+        function calculateAge() {
+            const dobVal = document.getElementById('dobInput').value;
+            const badge = document.getElementById('calculatedAgeBadge');
+            if (!dobVal) {
+                badge.style.display = 'none';
+                return;
+            }
+            const dob = new Date(dobVal);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            if (age >= 0 && age < 120) {
+                badge.textContent = `📅 السن: ${age} سنة`;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function handleFileSelect(e, side) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const preview = document.getElementById(side + 'Preview');
+            const placeholder = document.getElementById(side + 'Placeholder');
+            const box = document.getElementById(side + 'Box');
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                preview.src = evt.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                box.classList.add('has-file');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function submitKycForm(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const msgBox = document.getElementById('messageBoxKyc');
+
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳ جاري رفع المستندات والتحقق...</span>';
+
+            const form = document.getElementById('kycForm');
+            const formData = new FormData(form);
+
+            try {
+                const res = await fetch('/api/kyc/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    msgBox.className = 'success';
+                    msgBox.textContent = data.message || '✅ تم استلام بيانات الهوية بنجاح! جاري تحويلك...';
+                    msgBox.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = data.redirect || '/home';
+                    }, 1200);
+                } else {
+                    msgBox.className = 'error';
+                    msgBox.textContent = data.message || 'حدث خطأ أثناء رفع المستندات.';
+                    msgBox.style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>🚀 إرسال مستندات الهوية وتفعيل الحساب</span>';
+                }
+            } catch (err) {
+                msgBox.className = 'error';
+                msgBox.textContent = 'تعذر الاتصال بالخادم، يرجى المحاولة مرة أخرى.';
+                msgBox.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<span>🚀 إرسال مستندات الهوية وتفعيل الحساب</span>';
+            }
+        }
+
+        // Run age calculate on page load if date present
+        document.addEventListener('DOMContentLoaded', () => {
+            calculateAge();
+        });
+    </script>
+</body>
+
+</html>

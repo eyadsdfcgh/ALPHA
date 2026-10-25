@@ -1,74 +1,470 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buy Course | ALPHA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>ALPHA | Subscription Plans</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .pricing-container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 1rem;
+        }
 
-    <!-- REPLACE 'test' WITH YOUR REAL PAYPAL CLIENT ID -->
-    <!-- Get it from: https://developer.paypal.com/dashboard/ -->
-    <script src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID_HERE&currency=USD"></script>
-    <script src="/static/protection.js"></script>
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .pricing-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(160, 32, 240, 0.4);
+            box-shadow: 0 20px 40px rgba(160, 32, 240, 0.15);
+        }
+
+        .pricing-card.popular {
+            background: rgba(160, 32, 240, 0.05);
+            border-color: rgba(160, 32, 240, 0.5);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 1rem;
+            right: -2rem;
+            background: linear-gradient(135deg, #A020F0, #7c3aed);
+            color: white;
+            padding: 0.5rem 3rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transform: rotate(45deg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .plan-price {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .plan-price span {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+            flex-grow: 1;
+        }
+
+        .plan-features li {
+            padding: 0.8rem 0;
+            color: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+
+        .plan-features li::before {
+            content: "✓";
+            color: #A020F0;
+            font-weight: bold;
+        }
+
+        .btn-select {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .pricing-card.popular .btn-select {
+            background: linear-gradient(135deg, #A020F0, #7c3aed);
+        }
+
+        .btn-select:hover {
+            transform: translateY(-2px);
+            background: #fff;
+            color: #000;
+        }
+
+        .pricing-card.popular .btn-select:hover {
+            box-shadow: 0 10px 20px rgba(160, 32, 240, 0.3);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: #111;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .close-modal:hover {
+            opacity: 1;
+        }
+
+        .payment-options {
+            display: grid;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .payment-btn {
+            padding: 1.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            background: transparent;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .payment-btn:hover {
+            border-color: #A020F0;
+            background: rgba(160, 32, 240, 0.05);
+        }
+
+        .vodafone-form {
+            display: none;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .vodafone-form.active {
+            display: block;
+        }
+
+        .transfer-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .transfer-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fca5a5;
+            letter-spacing: 2px;
+            margin: 0.5rem 0;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #A020F0;
+            background: rgba(160, 32, 240, 0.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .pricing-container {
+                margin: 1.5rem auto 3rem;
+                padding: 0 1rem;
+            }
+
+            .pricing-header {
+                margin-bottom: 2rem;
+            }
+
+            .pricing-header h1 {
+                font-size: 2rem;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .pricing-card {
+                padding: 1.75rem 1.25rem;
+            }
+
+            .plan-price {
+                font-size: 2.8rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem 1.25rem;
+                width: 95vw;
+                max-width: 95vw;
+            }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="pricing-container fade-in">
+        <a href="/home" style="color: rgba(255,255,255,0.5); text-decoration: none; display: inline-block; margin-bottom: 2rem;">&larr; Back to Dashboard</a>
+        
+        <div class="pricing-header">
+            <h1>Choose Your Plan</h1>
+            <p>Unlock the right knowledge and tools for your trading journey.</p>
+        </div>
 
-    <div class="container fade-in" style="text-align: center; max-width: 500px;">
-        <h1>Unlock Full Access</h1>
-        <p style="margin-bottom: 2rem; color: rgba(255,255,255,0.7);">
-            Get lifetime access to the Advanced Security Course for just <strong>$50.00</strong>.
-        </p>
+        <div class="pricing-grid">
+            <!-- Starter Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Starter</div>
+                <div class="plan-price">$30</div>
+                <ul class="plan-features">
+                    <li>1 Course of choice</li>
+                    <li>1 Week Signals</li>
+                    <li>Basic Community Access</li>
+                </ul>
+                <button class="btn-select" onclick="selectPlan('Starter', 30)">Select Starter</button>
+            </div>
 
-        <div id="paypal-button-container"></div>
+            <!-- Pro Plan -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">POPULAR</div>
+                <div class="plan-name">Pro</div>
+                <div class="plan-price">$60</div>
+                <ul class="plan-features">
+                    <li>3 Courses (SMC, SK, ICT)</li>
+                    <li>1 Month Signals</li>
+                    <li>Advanced Tools Access</li>
+                    <li>Priority Support</li>
+                </ul>
+                <button class="btn-select" onclick="selectPlan('Pro', 60)">Select Pro</button>
+            </div>
 
-        <div style="margin-top: 2rem;">
-            <a href="/home" style="color: rgba(255,255,255,0.5); text-decoration: none;">&larr; Cancel and return
-                home</a>
+            <!-- VIP Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">VIP</div>
+                <div class="plan-price">$150</div>
+                <ul class="plan-features">
+                    <li>All Courses Included</li>
+                    <li>Lifetime Mentorship</li>
+                    <li>Lifetime Signals</li>
+                    <li>1-on-1 Sessions</li>
+                    <li>Private VIP Group</li>
+                </ul>
+                <button class="btn-select" onclick="selectPlan('VIP', 150)">Select VIP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            
+            <div id="methodSelection">
+                <h2 style="margin-bottom: 0.5rem; text-align: center;">Choose Payment Method</h2>
+                <p style="text-align: center; color: rgba(255,255,255,0.6); margin-bottom: 2rem;">
+                    You selected the <strong id="selectedTierName" style="color: #fff;"></strong> plan (<span id="selectedTierPrice"></span>).
+                </p>
+
+                <div class="payment-options">
+                    <button class="payment-btn" onclick="proceedToCrypto()">
+                        <span>🪙 Cryptocurrency</span>
+                        <span>&rarr;</span>
+                    </button>
+                    <button class="payment-btn" onclick="showVodafoneForm()">
+                        <span>📱 Vodafone Cash</span>
+                        <span>&rarr;</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="vodafone-form" id="vodafoneForm">
+                <button style="background:none; border:none; color: rgba(255,255,255,0.5); cursor:pointer; margin-bottom: 1rem;" onclick="backToMethods()">&larr; Back to methods</button>
+                <h2 style="margin-bottom: 1.5rem; text-align: center;">Vodafone Cash Payment</h2>
+                
+                <div class="transfer-box">
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 0.5rem;">Please transfer</p>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #fff; margin-bottom: 1rem;">$<span id="vfAmount"></span> (or equivalent)</div>
+                    <p style="color: rgba(255,255,255,0.7);">to the following number:</p>
+                    <div class="transfer-number" id="vodaNumber">01070339646</div>
+                </div>
+
+                <form id="receiptForm" onsubmit="submitReceipt(event)">
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; color: rgba(255,255,255,0.8);">Upload Receipt Screenshot</label>
+                        <input type="file" id="receiptFile" accept="image/*" required style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+                    </div>
+                    <button type="submit" class="btn-select" style="background: linear-gradient(135deg, #A020F0, #7c3aed);" id="submitBtn">Submit Payment Verification</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <script>
-        paypal.Buttons({
-            // Set up the transaction
-            createOrder: function (data, actions) {
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: {
-                            value: '50.00'
-                        }
-                    }]
+        let currentTier = '';
+        let currentPrice = 0;
+
+        function selectPlan(tier, price) {
+            currentTier = tier;
+            currentPrice = price;
+            
+            document.getElementById('selectedTierName').textContent = tier;
+            document.getElementById('selectedTierPrice').textContent = '$' + price;
+            document.getElementById('vfAmount').textContent = price;
+            
+            document.getElementById('methodSelection').style.display = 'block';
+            document.getElementById('vodafoneForm').classList.remove('active');
+            
+            document.getElementById('paymentModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        function proceedToCrypto() {
+            window.location.href = '/buy-crypto?tier=' + encodeURIComponent(currentTier);
+        }
+
+        function showVodafoneForm() {
+            document.getElementById('methodSelection').style.display = 'none';
+            document.getElementById('vodafoneForm').classList.add('active');
+        }
+
+        function backToMethods() {
+            document.getElementById('vodafoneForm').classList.remove('active');
+            document.getElementById('methodSelection').style.display = 'block';
+        }
+
+        async function submitReceipt(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('receiptFile');
+            if(!fileInput.files[0]) return;
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+
+            const formData = new FormData();
+            formData.append('receipt', fileInput.files[0]);
+            formData.append('tier', currentTier);
+
+            try {
+                const res = await fetch('/api/manual-payment', {
+                    method: 'POST',
+                    body: formData
                 });
-            },
-            // Finalize the transaction
-            onApprove: function (data, actions) {
-                return actions.order.capture().then(function (details) {
-                    // Call your server to save the transaction
-                    fetch('/api/confirm-payment', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            orderID: data.orderID,
-                            details: details
-                        })
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert('Transaction completed by ' + details.payer.name.given_name + '!');
-                                window.location.href = "/course";
-                            } else {
-                                alert('Something went wrong on our end.');
-                            }
-                        });
-                });
+                
+                const data = await res.json();
+                if(data.success) {
+                    alert('Receipt submitted successfully. Please wait for admin verification. This could take up to 24 hours. Your dashboard will unlock once approved.');
+                    window.location.href = '/home';
+                } else {
+                    alert('Error: ' + data.message);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Payment Verification';
+                }
+            } catch(err) {
+                alert('An error occurred while uploading. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Payment Verification';
             }
-        }).render('#paypal-button-container');
+        }
     </script>
 </body>
-
 </html>

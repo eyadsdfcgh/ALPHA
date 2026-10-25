@@ -1,0 +1,263 @@
+خريطة مشروع: منصة Alpha Trading Platform
+آخر تحديث: 2026-10-18
+
+================================================================================
+1. نظرة عامة على المشروع
+================================================================================
+منصة ويب متكاملة موجهة للمتداولين بأسلوب SMC (Smart Money Concept).
+تجمع بين المحتوى التعليمي المحمي، أدوات التداول المتقدمة، ونظام اشتراك
+متعدد الطبقات مع حماية قصوى للمحتوى.
+
+الميزات الأساسية:
+- نظام KYC (توثيق هوية المستخدمين) ← جديد
+- اشتراكات متعددة: Starter $30 | Pro $60 | VIP $150 ← جديد
+- حاسبة إدارة المخاطر (SMC Calculator)
+- يوميات التداول (Trading Journal) مع صور الصفقات
+- البث المباشر (Live Room) بتقنية WebRTC + SocketIO ← جديد
+- معرض الصفقات (Gallery) للمستخدمين والأدمن
+- إشارات التداول (Signals) من الأدمن ← جديد
+- نظام دردشة عامة + دردشة البث ← جديد
+- نظام إحالة وعمولات ($10 لكل إحالة مدفوعة)
+- نظام دفع مزدوج: Crypto (NOWPayments) + Vodafone Cash (يدوي) ← جديد
+- حماية المحتوى التعليمي (52 درس) من القرصنة
+
+================================================================================
+2. التقنيات المستخدمة
+================================================================================
+Backend:
+- Python 3 + Flask (خادم الويب الرئيسي)
+- Flask-SocketIO (WebSockets للبث الحي وWebRTC Signaling)
+- Requests (التواصل مع NOWPayments API)
+- Hashlib + Secrets (تأمين الجلسات وتوليد التوكنات)
+
+Frontend:
+- HTML5 (هيكل الصفحات)
+- CSS3 بأسلوب Glassmorphism (التصميم العصري)
+- Vanilla JavaScript (التفاعل + AJAX/Fetch)
+- WebRTC (البث المباشر من المتصفح مباشرة)
+
+قاعدة البيانات (JSON Files):
+- users.json         → المستخدمون + KYC + الاشتراكات
+- journal.json       → يوميات التداول
+- gallery.json       → صور المعرض
+- live.json          → إعدادات البث
+- live_chat.json     → دردشة البث (200 رسالة)
+- global_chat.json   → الدردشة العامة (200 رسالة)
+- signals.json       → إشارات التداول
+- messages.json      → رسائل الأدمن
+- manual_payments.json → طلبات Vodafone Cash المعلقة
+
+================================================================================
+3. هيكل الملفات والمجلدات (File Structure)
+================================================================================
+
+ALPHA-main/ (المجلد الجذري)
+│
+├── app.py                  ← القلب النابض (1537 سطر Python)
+│   يتضمن: Routes, APIs, KYC, Payments, WebRTC Signaling
+│
+├── users.json              ← قاعدة بيانات المستخدمين
+│   الحقول: id, username, password, role, has_paid, rank,
+│           kyc_status, kyc_data, expiry_date, is_permanent,
+│           tier, referral_code, referrals, completed_lessons,
+│           login_count, last_login
+│
+├── manual_payments.json    ← طلبات Vodafone Cash المعلقة
+├── gallery.json            ← صور معرض الصفقات
+├── messages.json           ← رسائل الأدمن العامة
+├── requirements.txt        ← Flask, flask-socketio, requests
+├── share_publicly.bat      ← تشغيل الخادم على الشبكة
+├── cloud.bat               ← النشر السحابي
+│
+├── templates/ (صفحات HTML - 16 صفحة)
+│   ├── index.html          Landing Page الترويجية
+│   ├── login.html          تسجيل الدخول والتسجيل
+│   ├── kyc.html            توثيق الهوية (KYC) [جديد]
+│   ├── home.html           Dashboard + SMC Calculator (61KB)
+│   ├── course.html         مكتبة الدروس + Video Player (71KB)
+│   ├── journal.html        يوميات التداول (33KB)
+│   ├── live.html           البث المباشر WebRTC (24KB)
+│   ├── gallery.html        معرض الصفقات (22KB)
+│   ├── chart.html          الرسوم البيانية (12KB)
+│   ├── chat.html           الدردشة العامة (8KB)
+│   ├── profile.html        الملف الشخصي + الإحالات (27KB)
+│   ├── buy.html            صفحة اختيار الطبقة (16KB)
+│   ├── buy-crypto.html     صفحة دفع Crypto (17KB)
+│   ├── admin.html          لوحة الأدمن الشاملة (50KB)
+│   ├── admin_payments.html مراجعة Vodafone Cash [جديد] (8KB)
+│   └── expired.html        صفحة انتهاء الاشتراك [جديد] (8KB)
+│
+└── static/ (ملفات CSS/JS الثابتة)
+    ├── style.css           التصميم العام - Glassmorphism
+    ├── script.js           المنطق الرئيسي + SMC حسابات (23KB)
+    ├── chat.css            تصميم صفحات الدردشة
+    ├── chat.js             منطق الدردشة العامة (5KB)
+    ├── protection.js       حماية المحتوى (3.7KB)
+    ├── js/                 ملفات JS إضافية
+    └── uploads/
+        ├── (صور الجورنال)
+        ├── receipts/       (إيصالات Vodafone Cash)
+        └── kyc/            (وثائق هوية المستخدمين)
+
+================================================================================
+4. نظام الأمان وصلاحيات الوصول (Decorators)
+================================================================================
+
+@login_required  → يتحقق من:
+  1. وجود session صالحة
+  2. اجتياز KYC (kyc_status == 'verified' + وجود صورة الهوية)
+  → غير ذلك: يُحوَّل لـ /kyc
+
+@payment_required → يتحقق من:
+  1. login_required (الشرط أعلاه)
+  2. has_paid == True
+  3. عدم انتهاء expiry_date (لغير الـ permanent)
+  → غير ذلك: يُحوَّل لـ /buy-course أو expired.html
+
+@admin_required → يتحقق من:
+  1. وجود session
+  2. role == 'admin'
+  → غير ذلك: 403 Unauthorized
+
+================================================================================
+5. تدفق المستخدم الجديد (User Flow)
+================================================================================
+تسجيل → KYC (رفع الهوية) → الدخول للـ Dashboard →
+→ إذا بدون اشتراك: صفحة الشراء →
+   → Crypto (NOWPayments) أو Vodafone Cash →
+   → بعد التأكيد: وصول كامل للمنصة
+→ إذا اشتراك منتهي: expired.html → صفحة الشراء
+
+================================================================================
+6. نظام KYC - شرح مفصل [جديد]
+================================================================================
+الصفحة: /kyc → template: kyc.html
+
+البيانات المطلوبة:
+- full_name: الاسم الكامل
+- dob: تاريخ الميلاد (يُحسب العمر تلقائياً)
+- country: الدولة/الإقامة
+- doc_type: national_id | driver_license | passport
+- front_image: صورة الوجه الأمامي (مطلوبة دائماً)
+- back_image: صورة الوجه الخلفي (مطلوبة لـ national_id و driver_license)
+
+الصيغ المقبولة: jpg, jpeg, png, webp, pdf
+التخزين: static/uploads/kyc/user_{id}_{side}_{token}.{ext}
+
+حالات KYC:
+  not_submitted → pending → verified ✅
+                          → rejected ❌
+                → unverified ❌
+
+الأدمن يستطيع من admin.html:
+- تغيير الحالة (toggle-kyc أو kyc-status API)
+- تحميل ملفات الهوية (download API)
+
+================================================================================
+7. نظام الاشتراكات - شرح مفصل [جديد]
+================================================================================
+الطبقات وأسعارها:
+  Starter: $30/شهر
+  Pro    : $60/شهر
+  VIP    : $150/شهر
+
+حقول المستخدم المرتبطة:
+  has_paid       : true/false (وصول للمحتوى)
+  is_permanent   : true/false (اشتراك مدى الحياة)
+  expiry_date    : "YYYY-MM-DD" (تاريخ الانتهاء)
+  tier           : "Starter" | "Pro" | "VIP"
+  subscription_status: "Active" | "Pending" | "Rejected"
+  payment_method : "Crypto" | "Vodafone Cash"
+
+منطق التحقق (في payment_required):
+  1. إذا is_permanent: وصول كامل بدون تحقق
+  2. إذا role == admin: وصول كامل
+  3. غير ذلك: تحقق من expiry_date
+     - إذا انتهى: عرض expired.html
+     - إذا لم يبدأ (has_paid=false): redirect لـ /buy-course
+
+================================================================================
+8. نظام الدفع المزدوج - شرح مفصل [جديد]
+================================================================================
+A. Crypto (NOWPayments API):
+   Endpoint: POST /create-crypto-payment
+   العملات: btc | eth | usdttrc20 | ltc | bnbbsc | usdcbsc
+   التأكيد: Webhook على /nowpayments-webhook
+   عند النجاح: has_paid=True + tier + subscription_status='Active'
+
+B. Vodafone Cash (يدوي):
+   Endpoint: POST /api/manual-payment
+   المستخدم يرفع: إيصال صورة (jpg/png/webp)
+   يُحفظ في: manual_payments.json + static/uploads/receipts/
+   الأدمن يراجع من: /admin/payments (admin_payments.html)
+   API الموافقة: POST /api/admin/payments/approve/<id>
+   API الرفض   : POST /api/admin/payments/reject/<id>
+
+================================================================================
+9. البث المباشر (WebRTC) - شرح مفصل [جديد]
+================================================================================
+الصفحة: /live → template: live.html
+التقنية: WebRTC Peer-to-Peer + Flask-SocketIO كـ Signaling Server
+
+SocketIO Events:
+  join_broadcast(role)  → الأدمن يدخل كـ broadcaster، المستخدمون كـ viewers
+  offer(data)           → إرسال WebRTC offer من المذيع للمشاهد
+  answer(data)          → رد المشاهد على الـ offer
+  ice_candidate(data)   → تبادل ICE candidates للاتصال المباشر
+  disconnect            → إعلام المذيع بخروج مشاهد
+
+الأدمن يتحكم في: URL البث، حالة البث (is_live)، موعد الجلسة القادمة
+API: POST /api/admin/live
+
+================================================================================
+10. كيف تترابط الملفات (آلية العمل)
+================================================================================
+1. المستخدم يطلب صفحة → app.py يستقبل الطلب
+2. app.py يتحقق من الصلاحيات (login/payment/admin decorators)
+3. يُرسل الـ HTML المناسب من templates/ للمتصفح
+4. المتصفح يحمّل CSS من static/style.css وJS من static/script.js
+5. عند أي تفاعل (حفظ صفقة، إرسال رسالة...) → script.js يرسل Fetch/AJAX لـ app.py
+6. app.py يعالج الطلب ويحدّث ملف JSON المناسب
+7. يرد بـ JSON على المتصفح → script.js يحدّث الـ UI بدون Refresh
+
+للبث المباشر:
+5. live.html تتصل بـ SocketIO → تبادل WebRTC signals عبر app.py
+6. بعد الاتصال: فيديو مباشر P2P بين الأدمن والمشاهدين
+
+================================================================================
+11. الـ API الكاملة (Quick Reference)
+================================================================================
+Route                                    Method    وصف
+/api/register                           POST      تسجيل جديد
+/api/login                              POST      تسجيل الدخول
+/api/users                              GET/POST  المستخدمون (Admin)
+/api/users/<id>                         PUT/DEL   تعديل/حذف
+/api/users/export                       GET       تصدير JSON
+/api/users/import                       POST      استيراد JSON
+/api/kyc/submit                         POST      رفع وثائق KYC
+/api/admin/users/<id>/kyc-status        POST      تغيير حالة KYC
+/api/admin/users/<id>/toggle-kyc        POST      تبديل verified
+/api/admin/kyc/download/<id>/<side>     GET       تحميل هوية
+/api/subscription-status               GET       حالة الاشتراك
+/create-crypto-payment                  POST      دفع Crypto
+/check-payment/<id>                     GET       تحقق من الدفع
+/nowpayments-webhook                    POST      Webhook تلقائي
+/api/manual-payment                     POST      Vodafone Cash
+/api/admin/payments/approve/<id>        POST      قبول دفع
+/api/admin/payments/reject/<id>         POST      رفض دفع
+/api/progress                           GET       تقدم الكورس
+/api/progress/<lesson>                  POST/DEL  تحديد درس
+/stream-video/<num>                     GET       بث فيديو
+/api/journal                            GET/POST  الجورنال
+/api/journal/<id>                       DELETE    حذف صفقة
+/api/signals                            GET/POST  الإشارات
+/api/signals/<id>                       PUT/DEL   تعديل/حذف
+/api/gallery                            GET/POST  المعرض
+/api/gallery/<id>                       DELETE    حذف صورة
+/api/admin/gallery                      POST      رفع صورة Admin
+/api/live/chat                          GET/POST  دردشة البث
+/api/chat                               GET/POST  الدردشة العامة
+/api/admin/live                         POST      إعدادات البث
+/api/messages                           GET/POST  رسائل الأدمن
+/api/referral                           GET       الإحالات
+/api/confirm-payment                    POST      تأكيد يدوي

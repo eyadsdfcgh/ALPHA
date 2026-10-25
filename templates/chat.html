@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Chat | ALPHA Trading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #a020f0;
+            /* Neon Purple */
+            --bg: #050505;
+            /* Deep Black */
+            --card: rgba(255, 255, 255, 0.05);
+            --border: rgba(160, 32, 240, 0.3);
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .navbar {
+            height: 64px;
+            background: rgba(5, 5, 5, 0.8);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            margin-left: 1rem;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 2rem 1rem;
+        }
+
+        .messages-box {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 8px 32px rgba(160, 32, 240, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .msg-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .msg-content {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem 1.25rem;
+            border-radius: 0 16px 16px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .msg-header {
+            margin-bottom: 0.25rem;
+        }
+
+        .msg-user {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .msg-rank {
+            font-size: 0.75rem;
+            background: rgba(160, 32, 240, 0.2);
+            color: #d8b4fe;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        .msg-time {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-left: 0.5rem;
+        }
+
+        .msg-text {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        #chatInput {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #chatInput:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(160, 32, 240, 0.2);
+        }
+
+        .send-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #b040f0;
+        }
+
+        .messages-box::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-box::-webkit-scrollbar-thumb {
+            background: rgba(160, 32, 240, 0.5);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="/home" class="nav-logo">⚡ ALPHA</a>
+        <div>
+            <a href="/home" class="nav-link">Dashboard</a>
+            <a href="https://scanner-9jzj.onrender.com/" target="_blank" class="nav-link">Charting Hub</a>
+        </div>
+    </nav>
+    <div class="chat-container">
+        <div class="messages-box" id="messagesBox">
+            <!-- Messages load here -->
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Join the discussion..." autocomplete="off">
+            <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('messagesBox');
+        const chatInput = document.getElementById('chatInput');
+
+        function fetchMessages() {
+            fetch('/api/chat')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        const isScrolledToBottom = chatBox.scrollHeight - chatBox.clientHeight <= chatBox.scrollTop + 50;
+                        chatBox.innerHTML = '';
+                        data.messages.forEach(msg => {
+                            const div = document.createElement('div');
+                            div.className = 'message';
+                            const av = msg.username.charAt(0).toUpperCase();
+                            div.innerHTML = `
+                                <div class="msg-avatar">${av}</div>
+                                <div class="msg-content">
+                                    <div class="msg-header">
+                                        <span class="msg-user">${msg.username}</span>
+                                        <span class="msg-rank">${msg.rank}</span>
+                                        <span class="msg-time">${msg.timestamp}</span>
+                                    </div>
+                                    <div class="msg-text">${msg.content.replace(/</g, "&lt;")}</div>
+                                </div>
+                            `;
+                            chatBox.appendChild(div);
+                        });
+                        if (isScrolledToBottom) {
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                        }
+                    }
+                });
+        }
+
+        function sendMessage() {
+            const val = chatInput.value.trim();
+            if (!val) return;
+            chatInput.value = '';
+            fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: val })
+            }).then(() => { fetchMessages(); });
+        }
+
+        chatInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // initial load and poll
+        fetchMessages();
+        setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 300);
+        setInterval(fetchMessages, 3000);
+    </script>
+</body>
+
+</html>

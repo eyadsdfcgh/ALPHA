@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alpha Live Room | ALPHA Trading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="/static/protection.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a855f7;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg: #080d1a;
+            --bg-2: #0f172a;
+            --card: rgba(255, 255, 255, 0.04);
+            --card-hover: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #e2e8f0;
+            --text-dim: rgba(255, 255, 255, 0.45);
+            --glow: rgba(99, 102, 241, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(168, 85, 247, 0.10) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* NAV */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: rgba(8, 13, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text);
+            background: var(--card);
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .username-badge {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* LAYOUT */
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 64px);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+        }
+
+        .widget-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--primary);
+            margin-bottom: 1.25rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 0.9rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-dim);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav-item:hover {
+            color: var(--text);
+            background: var(--card);
+        }
+
+        .sidebar-nav-item.active {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* MAIN */
+        .main {
+            padding: 2.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .live-header-bar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .live-title-container h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .live-title-container p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .status-live {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+            animation: pulse-red 2s infinite;
+        }
+
+        .status-offline {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        .status-offline span {
+            color: var(--primary);
+            margin-left: 0.5rem;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        .live-grid {
+            display: grid;
+            grid-template-columns: 70% 1fr;
+            gap: 1.5rem;
+            flex: 1;
+            min-height: 600px;
+        }
+
+        /* VIDEO */
+        .video-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            /* 16:9 */
+            background: #000;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* CHAT */
+        .chat-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .chat-msg {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+        }
+
+        .chat-user {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .chat-time {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            font-weight: 400;
+        }
+
+        .chat-text {
+            font-size: 0.9rem;
+            color: var(--text);
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .chat-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .chat-input-area button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            padding: 0 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chat-input-area button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Hamburger & Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1.3rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .mobile-nav-drawer {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: rgba(8, 13, 26, 0.98);
+            backdrop-filter: blur(25px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 199;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .mobile-nav-drawer.open {
+            display: flex;
+        }
+
+        .mobile-nav-drawer .nav-link {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 1024px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .live-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-container {
+                height: 480px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .navbar {
+                padding: 0 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .main {
+                padding: 1rem 0.85rem 3rem;
+                gap: 1rem;
+            }
+
+            .live-header-bar {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .live-title-container h1 {
+                font-size: 1.35rem;
+            }
+
+            .chat-container {
+                height: 420px;
+            }
+
+            .chat-messages {
+                padding: 1rem;
+            }
+
+            .chat-input-area {
+                padding: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+            <button class="mobile-menu-btn" onclick="document.getElementById('liveMobNav').classList.toggle('open')" aria-label="Toggle navigation">☰</button>
+            <span class="nav-logo">⚡ ALPHA</span>
+        </div>
+        <div class="nav-links">
+            <a href="/home" class="nav-link">Dashboard</a>
+            <a href="/course" class="nav-link">📚 Course</a>
+            <a href="/journal" class="nav-link">📓 Journal</a>
+            <a href="/profile" class="nav-link">👤 Profile</a>
+            <a href="/live" class="nav-link active">📻 Live</a>
+            <a href="/gallery" class="nav-link">🖼️ Gallery</a>
+        </div>
+        <div class="nav-user">
+            <div class="avatar">{{ user.username[0]|upper }}</div>
+            <span class="username-badge">{{ user.username }}</span>
+        </div>
+    </nav>
+
+    <div class="mobile-nav-drawer" id="liveMobNav">
+        <a href="/home" class="nav-link">🏠 Dashboard</a>
+        <a href="/course" class="nav-link">📚 SMC Course</a>
+        <a href="/journal" class="nav-link">📓 Trading Journal</a>
+        <a href="/profile" class="nav-link">👤 Profile & Referrals</a>
+        <a href="/live" class="nav-link active">📻 Live Room</a>
+        <a href="/gallery" class="nav-link">🖼️ Alpha Gallery</a>
+        <a href="/logout" class="nav-link" style="color: rgba(239,68,68,0.9);">🚪 Logout</a>
+    </div>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div>
+                <div class="widget-title">📌 Navigation</div>
+                <nav class="sidebar-nav">
+                    <a href="/home" class="sidebar-nav-item"><span class="icon">🏠</span> Dashboard</a>
+                    <a href="/course" class="sidebar-nav-item"><span class="icon">📚</span> Course Videos</a>
+                    <a href="/journal" class="sidebar-nav-item"><span class="icon">📓</span> My Journal</a>
+                    <a href="/profile" class="sidebar-nav-item"><span class="icon">👤</span> Profile & Referrals</a>
+                    <a href="/live" class="sidebar-nav-item active"><span class="icon">📻</span> Alpha Live</a>
+                    <a href="/gallery" class="sidebar-nav-item"><span class="icon">🖼️</span> Alpha Gallery</a>
+                    {% if user.role == 'admin' %}
+                    <a href="/admin" class="sidebar-nav-item"><span class="icon">⚙️</span> Admin Panel</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </aside>
+
+        <main class="main">
+            <div class="live-header-bar">
+                <div class="live-title-container">
+                    <h1>📻 Alpha Live Room</h1>
+                    <p>Join the daily session, interact, and learn live.</p>
+                </div>
+                <div>
+                    {% if live_data.is_live %}
+                    <div class="status-badge status-live">🔴 LIVE NOW</div>
+                    {% else %}
+                    <div class="status-badge status-offline">OFFLINE <span>Next: {{ live_data.next_session }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="live-grid">
+                <div class="video-container">
+                    <div class="video-wrapper">
+                        <div id="youtubeWrapper" style="width: 100%; height: 100%; position: absolute; top:0; left:0;">
+                            {% if live_data.url and (live_data.is_live or user.role == 'admin') %}
+                            <iframe src="{{ live_data.url }}" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:100%; border:none;"></iframe>
+                            {% if not live_data.is_live %}
+                            <div style="position:absolute; top: 10px; left: 10px; background: rgba(239, 68, 68, 0.8); color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; z-index: 10;">🛠️ Admin Preview (Offline for Users)</div>
+                            {% endif %}
+                            {% else %}
+                            <div style="display:flex; flex-direction: column; align-items:center;justify-content:center;height:100%;color:var(--text-dim); gap: 1rem; background: rgba(0,0,0,0.5);">
+                                <div style="font-size: 3rem;">📡</div>
+                                <div style="font-size: 1.2rem; font-weight: 600;">البث المباشر غير متاح حالياً</div>
+                                <div>موعد الجلسة القادمة: {{ live_data.next_session }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <!-- Native WebRTC Video Element -->
+                        <video id="nativeVideo" autoplay playsinline style="position:absolute; top:0; left:0; width:100%; height:100%; display:none; background:#000; z-index:5;"></video>
+                    </div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-header">
+                        💬 Live Discussion
+                    </div>
+                    <div class="chat-messages" id="chatBox">
+                        <!-- Messages populated here -->
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chatInput" placeholder="Ask a question..." autocomplete="off"
+                            onkeypress="handleEnter(event)">
+                        <button onclick="sendLiveMsg()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+
+        function fetchLiveMessages() {
+            fetch('/api/live/chat')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        renderMessages(data.messages);
+                    }
+                });
+        }
+
+        function renderMessages(msgs) {
+            chatBox.innerHTML = '';
+            msgs.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'chat-msg';
+                div.innerHTML = `
+                <div class="chat-user">${msg.username} <span class="chat-time">${msg.timestamp}</span></div>
+                <div class="chat-text">${escapeHTML(msg.content)}</div>
+            `;
+                chatBox.appendChild(div);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendLiveMsg() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            chatInput.value = '';
+            fetch('/api/live/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: text })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchLiveMessages();
+                    }
+                });
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendLiveMsg();
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g,
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        // Poll chat every 3 seconds
+        setInterval(fetchLiveMessages, 3000);
+        fetchLiveMessages();
+
+        // ========== NATIVE BROADCAST (VIEWER) ==========
+        let socket;
+        let pc;
+        const config = {
+            'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]
+        };
+
+        function initViewerWebRTC() {
+            socket = io();
+
+            socket.on('connect', () => {
+                socket.emit('join_broadcast', { role: 'viewer' });
+            });
+
+            socket.on('offer', async (data) => {
+                document.getElementById('youtubeWrapper').style.display = 'none';
+                document.getElementById('nativeVideo').style.display = 'block';
+
+                if (pc) {
+                    pc.close();
+                }
+                pc = new RTCPeerConnection(config);
+
+                pc.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.emit('ice_candidate', { target: 'broadcaster', candidate: event.candidate, sender: socket.id });
+                    }
+                };
+
+                pc.ontrack = (event) => {
+                    const video = document.getElementById('nativeVideo');
+                    if (video.srcObject !== event.streams[0]) {
+                        video.srcObject = event.streams[0];
+                    }
+                };
+                
+                pc.oniceconnectionstatechange = () => {
+                    if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'closed') {
+                        document.getElementById('youtubeWrapper').style.display = 'block';
+                        document.getElementById('nativeVideo').style.display = 'none';
+                        document.getElementById('nativeVideo').srcObject = null;
+                    }
+                };
+
+                await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                
+                socket.emit('answer', { target: 'broadcaster', answer: pc.localDescription, sender: socket.id });
+            });
+
+            socket.on('ice_candidate', async (data) => {
+                if (pc && data.candidate) {
+                    await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
+                }
+            });
+        }
+        
+        initViewerWebRTC();
+    </script>
+</body>
+
+</html>

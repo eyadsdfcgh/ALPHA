@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALPHA | Subscription Expired</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --primary: #A020F0;
+            --primary-glow: rgba(160, 32, 240, 0.35);
+            --card-bg: rgba(160, 32, 240, 0.06);
+            --border: rgba(160, 32, 240, 0.25);
+            --text: #f0f0ff;
+            --text-muted: rgba(240, 240, 255, 0.55);
+            --red: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 60% at 50% 0%, rgba(160, 32, 240, 0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 80% 80%, rgba(239, 68, 68, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 3rem 2rem;
+            max-width: 520px;
+            width: 100%;
+        }
+
+        .icon-wrap {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 2rem;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.12);
+            border: 2px solid rgba(239, 68, 68, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.25);
+            animation: pulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 50px rgba(239, 68, 68, 0.5);
+            }
+        }
+
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--red);
+            margin-bottom: 0.75rem;
+            text-shadow: 0 0 30px var(--red-glow);
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.65;
+        }
+
+        .user-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+        }
+
+        .user-badge strong {
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .benefit {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .benefit:last-child {
+            border-bottom: none;
+        }
+
+        .benefit-icon {
+            font-size: 1.2rem;
+            width: 28px;
+            flex-shrink: 0;
+        }
+
+        .btn-renew {
+            display: block;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #A020F0, #7c3aed);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(160, 32, 240, 0.4);
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-renew:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(160, 32, 240, 0.6);
+        }
+
+        .btn-logout {
+            display: block;
+            width: 100%;
+            padding: 0.85rem 2rem;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--text);
+        }
+
+        .alpha-logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #A020F0, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+            display: block;
+            margin-bottom: 2.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <span class="alpha-logo">⚡ ALPHA</span>
+
+        {% if user %}
+        <div class="user-badge">Logged in as <strong>{{ user.username }}</strong></div>
+        {% endif %}
+
+        <div class="icon-wrap">⏳</div>
+
+        <h1>Subscription Expired</h1>
+        <p class="subtitle">
+            Your ALPHA subscription has ended.<br>
+            Renew now to regain full access to the course, signals, and all premium features.
+        </p>
+
+        <div class="card">
+            <h2>🔓 What you'll get back with renewal</h2>
+            <div class="benefit">
+                <span class="benefit-icon">🎓</span>
+                <span>Full access to 50+ professional trading lessons</span>
+            </div>
+            <div class="benefit">
+                <span class="benefit-icon">📡</span>
+                <span>Live trading signals with entry, SL & TP</span>
+            </div>
+            <div class="benefit">
+                <span class="benefit-icon">📻</span>
+                <span>Alpha Live Room — real-time market analysis sessions</span>
+            </div>
+            <div class="benefit">
+                <span class="benefit-icon">🖼️</span>
+                <span>Alpha Gallery — curated chart pattern library</span>
+            </div>
+            <div class="benefit">
+                <span class="benefit-icon">📒</span>
+                <span>Private trading journal & SMC calculator</span>
+            </div>
+        </div>
+
+        <a href="/buy-course" class="btn-renew">🚀 Renew Subscription Now</a>
+        <a href="/logout" class="btn-logout">← Logout</a>
+    </div>
+</body>
+
+</html>

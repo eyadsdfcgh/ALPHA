@@ -1,55 +1,834 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome | Secure Access</title>
-    <!-- Google Fonts -->
+    <title>ALPHA | كن أنت المسيطر</title>
+    <!-- Google Fonts: Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
-    <script src="/static/protection.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a855f7;
+            --accent: #f59e0b;
+            --bg: #080d1a;
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-glass: rgba(15, 23, 42, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --glow: rgba(168, 85, 247, 0.4);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glow Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% -10%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 80% 100%, rgba(168, 85, 247, 0.15) 0%, transparent 60%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Navbar */
+        nav {
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: rgba(8, 13, 26, 0.8);
+            backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+
+        .nav-login-btn {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-login-btn:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 1rem;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
+            max-width: 900px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(to right, #a855f7, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero h1 span::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 30%;
+            bottom: 0;
+            left: 0;
+            background: var(--glow);
+            filter: blur(20px);
+            z-index: -1;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(168, 85, 247, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+            }
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.6);
+        }
+
+        .mockup-container {
+            margin-top: 4rem;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+        }
+
+        .mockup {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(99, 102, 241, 0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--text-secondary);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .mockup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .mockup::after {
+            content: '🔴 🟡 🟢';
+            position: absolute;
+            top: 5px;
+            left: 15px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            font-weight: 800;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.1), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(168, 85, 247, 0.5);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .feature-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Security Section */
+        .security {
+            padding: 6rem 5%;
+            background: linear-gradient(to right, rgba(15, 23, 42, 0.8), rgba(8, 13, 26, 0.9));
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            position: relative;
+        }
+
+        .security-shield {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.6));
+        }
+
+        .security h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .security p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Course Preview */
+        .course-preview {
+            padding: 6rem 5%;
+            overflow: hidden;
+        }
+
+        .scroll-container {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding: 2rem 0;
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            display: none;
+            /* Chrome/Safari */
+        }
+
+        .lesson-card {
+            min-width: 280px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+
+        .lesson-card:hover {
+            opacity: 1;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .lesson-icon {
+            font-size: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .lesson-info h3 {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 6rem 5%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .pricing-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .pricing-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .pricing-card.popular {
+            border-color: var(--primary);
+            box-shadow: 0 20px 50px rgba(99, 102, 241, 0.2);
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            z-index: -1;
+            border-radius: 26px;
+            opacity: 0.5;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .price-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            align-self: center;
+        }
+
+        .price {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 2rem;
+            line-height: 1;
+        }
+
+        .price span {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .benefits {
+            list-style: none;
+            margin-bottom: 3rem;
+            text-align: right;
+            flex-grow: 1;
+        }
+
+        .benefits li {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .benefits li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            background: rgba(16, 185, 129, 0.2);
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .cta-btn-card {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.popular .cta-btn-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .cta-btn-card:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 3rem 5%;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            transition: color 0.3s;
+            text-decoration: none;
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+        }
+
+        /* 📱 MOBILE RESPONSIVENESS */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.25rem;
+            }
+
+            .logo {
+                font-size: 1.4rem;
+            }
+
+            .nav-login-btn {
+                padding: 0.4rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .hero {
+                padding: 2.5rem 1rem;
+                min-height: auto;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .cta-btn {
+                width: 100%;
+                max-width: 320px;
+                padding: 1rem 1.5rem;
+                font-size: 1.05rem;
+                text-align: center;
+            }
+
+            .mockup-container {
+                margin-top: 2.5rem;
+            }
+
+            .mockup {
+                height: 220px;
+                font-size: 1.1rem;
+                border-radius: 14px;
+            }
+
+            .features {
+                padding: 3rem 1.25rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+                margin-bottom: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .feature-card {
+                padding: 1.75rem 1.25rem;
+            }
+
+            .feature-icon {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .security {
+                padding: 3.5rem 1.25rem;
+            }
+
+            .security-shield {
+                font-size: 3.5rem;
+            }
+
+            .security h2 {
+                font-size: 1.8rem;
+            }
+
+            .security p {
+                font-size: 0.95rem;
+            }
+
+            .course-preview {
+                padding: 3rem 1.25rem;
+            }
+
+            .pricing {
+                padding: 3.5rem 1.25rem;
+            }
+
+            .pricing-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .pricing-card {
+                padding: 2rem 1.25rem;
+            }
+
+            .price {
+                font-size: 2.8rem;
+            }
+
+            footer {
+                padding: 2rem 1.25rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="container fade-in">
-        <div id="messageBox" class="message"></div>
+    <nav data-aos="fade-down" data-aos-duration="1000">
+        <div class="logo">⚡ ALPHA</div>
+        <div>
+            <a href="/login" class="nav-login-btn">تسجيل الدخول</a>
+        </div>
+    </nav>
 
-        <!-- Login Form -->
-        <div id="loginSection">
-            <h1>Welcome Back</h1>
-            <form id="loginForm">
-                <div class="input-group">
-                    <input type="text" id="loginUser" placeholder="Username" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="loginPass" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn-primary">Sign In</button>
-            </form>
-            <button class="toggle-btn" onclick="showRegister()">Don't have an account? Create one</button>
+    <section class="hero">
+        <h1 data-aos="zoom-in" data-aos-duration="1200">لا تكتفِ بمشاهدة السوق..<br>كن أنت الـ <span>ALPHA</span>
+            المسيطر عليه</h1>
+        <p data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">انضم إلى النظام البيئي المتكامل الذي يجمع
+            بين احترافية الـ SMC، أدوات التحليل الذكية، والبث المباشر المتقدم.</p>
+        <a href="/login" class="cta-btn" data-aos="fade-up" data-aos-delay="400">ابدأ رحلة الاحتراف الآن</a>
+
+        <div class="mockup-container" data-aos="fade-up" data-aos-delay="600" data-aos-duration="1500">
+            <div class="mockup">
+                لوحة تحكم احترافية متكاملة 🚀
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <h2 class="section-title" data-aos="fade-up">كل ما تحتاجه للسيطرة على الشارت</h2>
+        <div class="features-grid">
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-icon">📻</div>
+                <h3 class="feature-title">Alpha Live Room</h3>
+                <p class="feature-desc">جلسات بث مباشر لتحليل الأسواق مباشرة مع نظام دردشة تفاعلي للمناقشة وتطبيق
+                    المفاهيم.</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-icon">🖼️</div>
+                <h3 class="feature-title">The Alpha Gallery</h3>
+                <p class="feature-desc">معرض متجدد يضم أقوى الشارتات ونماذج الدخول بصيغة عالية الجودة كمكتبة أفكار
+                    مرئية.</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-icon">🧮</div>
+                <h3 class="feature-title">SMC Calculator</h3>
+                <p class="feature-desc">أداة حاسبة متقدمة لإدارة المخاطر وحساب حجم العقود المناسب لكل صفقة بدقة متناهية.
+                </p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Private Journal</h3>
+                <p class="feature-desc">مفكرتك الشخصية المشفرة لتدوين الصفقات والمشاعر ومراقبة تطورك النفسي والفني بمرور
+                    الوقت.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="security">
+        <div class="security-shield" data-aos="zoom-in">🛡️</div>
+        <h2 data-aos="fade-up">محتواك أمانة وحقك محفوظ</h2>
+        <p data-aos="fade-up" data-aos-delay="100">نظام حماية متطور (Anti-Piracy) يمنع النسخ ويعتمد على تقنية Dynamic
+            Watermark لضمان بيئة تعليمية حصرية وآمنة.</p>
+    </section>
+
+    <section class="course-preview">
+        <h2 class="section-title" style="margin-bottom: 2rem;" data-aos="fade-up">مكتبة كورس احترافية (50+ درس)</h2>
+        <div class="scroll-container" data-aos="fade-left">
+            <!-- Repeated dummy lessons to create scroll effect -->
+            <script>
+                for (let i = 1; i <= 10; i++) {
+                    document.write(`
+                        <div class="lesson-card">
+                            <div class="lesson-icon">🔒</div>
+                            <div class="lesson-info">
+                                <h3 style="color:var(--text-secondary); margin-bottom: 0.3rem;">درس احترافي ${i}</h3>
+                                <div style="font-size: 0.8rem; color: #666;">مفاهيم SMC المتقدمة</div>
+                            </div>
+                        </div>
+                    `);
+                }
+            </script>
+        </div>
+    </section>
+
+    <section class="pricing">
+        <div class="pricing-header" data-aos="fade-up">
+            <h2>اختر الباقة المناسبة لك</h2>
+            <p style="color: var(--text-secondary); font-size: 1.1rem;">احصل على المعرفة والأدوات الصحيحة لرحلة تداولك.
+            </p>
         </div>
 
-        <!-- Register Form -->
-        <div id="registerSection" style="display: none;">
-            <h1>Create Account</h1>
-            <form id="registerForm">
-                <div class="input-group">
-                    <input type="text" id="regUser" placeholder="Username" required>
-                </div>
-                <div class="input-group">
-                    <input type="password" id="regPass" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn-primary">Sign Up</button>
-            </form>
-            <button class="toggle-btn" onclick="showLogin()">Already have an account? Sign In</button>
-        </div>
-    </div>
+        <div class="pricing-grid">
+            <!-- Starter Plan -->
+            <div class="pricing-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="plan-name">باقة البداية (Starter)</div>
+                <div class="price">$50</div>
+                <ul class="benefits">
+                    <li>كورس واحد من اختيارك</li>
+                    <li>توصيات لمدة أسبوع</li>
+                    <li>وصول أساسي للمجتمع Alpha</li>
+                </ul>
+                <a href="/login" class="cta-btn-card">اشترك الآن</a>
+            </div>
 
-    <script src="/static/script.js"></script>
+            <!-- Pro Plan -->
+            <div class="pricing-card popular" data-aos="fade-up" data-aos-delay="200">
+                <div class="price-badge">أكثر شعبية</div>
+                <div class="plan-name">الباقة الاحترافية (Pro)</div>
+                <div class="price">$60</div>
+                <ul class="benefits">
+                    <li>3 كورسات (SMC, SK, ICT)</li>
+                    <li>توصيات لمدة شهر</li>
+                    <li>الوصول للأدوات المتقدمة</li>
+                    <li>أولوية في الدعم الفني</li>
+                </ul>
+                <a href="/login" class="cta-btn-card">اشترك الآن</a>
+            </div>
+
+            <!-- VIP Plan -->
+            <div class="pricing-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="plan-name">باقة النخبة (VIP)</div>
+                <div class="price">$150</div>
+                <ul class="benefits">
+                    <li>الوصول الكامل لجميع الكورسات</li>
+                    <li>إرشاد وتوجيه مدى الحياة (Mentorship)</li>
+                    <li>توصيات مدى الحياة</li>
+                    <li>جلسات خاصة (1-on-1)</li>
+                    <li>مجموعة VIP الخاصة</li>
+                </ul>
+                <a href="/login" class="cta-btn-card">اشترك الآن</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="social-links">
+            <a href="#">📱</a>
+            <a href="#">🐦</a>
+            <a href="#">📹</a>
+        </div>
+        <p>&copy; 2026 ALPHA Trading Platform. جميع الحقوق محفوظة.</p>
+    </footer>
+
+    <!-- AOS Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+            offset: 100
+        });
+    </script>
 </body>
 
 </html>

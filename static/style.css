@@ -221,4 +221,54 @@ button {
     padding: 2rem;
     border-radius: 16px;
     width: 300px;
+    max-width: 92vw;
 }
+
+/* ==========================================================
+   📱 ULTRA-COMPREHENSIVE MOBILE RESPONSIVENESS (MAX-WIDTH: 768px)
+   ========================================================== */
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 92%;
+        padding: 2rem 1.25rem;
+        border-radius: 18px;
+        margin: 1.5rem auto;
+    }
+
+    .admin-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+    }
+
+    .user-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .user-table th, .user-table td {
+        padding: 0.75rem 0.6rem;
+        font-size: 0.82rem;
+    }
+
+    button, input, select, textarea {
+        font-size: 16px !important; /* Prevents auto-zoom on iOS */
+    }
+
+    h1 {
+        font-size: 1.8rem !important;
+    }
+
+    h2 {
+        font-size: 1.4rem !important;
+    }
+}
+
